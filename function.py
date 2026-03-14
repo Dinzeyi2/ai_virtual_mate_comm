@@ -24,7 +24,7 @@ def current_time():  # 获取当前时间
 
 
 def on_closing():  # 退出
-    if messagebox.askokcancel("确认退出", "您确定要退出枫云AI虚拟伙伴Web版吗？"):
+    if messagebox.askokcancel("确认退出", "您确定要退出枫云AI虚拟伙伴社区版吗？"):
         root.destroy()
 
 
@@ -101,7 +101,7 @@ def cloud_function_llm(function_prompt, msg):  # 大语言模型云功能函数
     return completion.choices[0].message.content.replace("#", "").replace("*", "").strip()
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def function_llm(function_prompt, msg):  # 大语言模型功能函数
     function_prompt = function_prompt + "/no_think"
     messages = [{"role": "system", "content": function_prompt}, {"role": "user", "content": msg}]
@@ -207,4 +207,4 @@ def open_web_tips():  # 打开手机访问网页提示
         text2 = f"对话网址: 未开启\nLive2D角色网址: http://{server_ip}:{live2d_port}\nMMD 3D角色网址: http://{server_ip}:{mmd_port}\nVRM 3D角色网址: http://{server_ip}:{vrm_port}\nMMD 3D动作网址: http://{server_ip}:{mmd_port}/vmd"
     text3 = "不仅手机能访问，\n同一WiFi或局域网下的电脑/平板/电视/手表/车机如果内置浏览器，\n也可通过输入上述网址访问AI虚拟伙伴\n\n网页端在非本电脑的其他设备上默认情况下仅支持打字聊天和显示角色，不支持语音识别、语音输出和摄像头识别。如需串流其他设备，推荐使用AudioReplay和iVCam软件"
     text = text1 + "\n\n" + text2 + "\n\n" + text3
-    msg_box("手机网页访问 - 枫云AI虚拟伙伴Web版", text)
+    msg_box("手机网页访问 - 枫云AI虚拟伙伴社区版", text)

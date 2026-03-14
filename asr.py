@@ -59,7 +59,7 @@ def record_audio():  # 录音
     return b''.join(frames)
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def verify_speakers():  # 声纹识别
     global vp_config, extractor, audio1, sample_rate1, embedding1
     audio_file1 = "data/cache/voiceprint/myvoice.wav"

@@ -36,7 +36,7 @@ live2d_web_template = """
     <script src="/assets/live2d_core/live2dcubismcore.min.js"></script>
     <script src="/assets/live2d_core/live2d.min.js"></script>
     <script src="/assets/live2d_core/pixi.min.js"></script>
-    <title>Live2D角色 - 枫云AI虚拟伙伴Web版</title>
+    <title>Live2D角色 - 枫云AI虚拟伙伴社区版</title>
     <script type="module" crossorigin src="/assets/live2d.js"></script>
   </head>
   <body>
@@ -89,7 +89,7 @@ live2d_pet_template = """
 """
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 @app.route('/')
 def index():
     return render_template_string(live2d_web_template)

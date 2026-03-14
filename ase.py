@@ -23,7 +23,7 @@ def ase_hello():  # 根据时间发起话题
             break
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def run_ase_rp():  # 角色扮演聊天模式的主动对话
     def ase_vlm_screen():
         ase_chat(

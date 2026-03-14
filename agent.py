@@ -115,7 +115,7 @@ def control_ha():  # Home Assistant智能家居控制
     get_tts_play(ha_result)
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def get_weather(msg):  # 天气查询
     def get_weather2():
         def extract_weather_city_name(msg2):  # 提取题天气城市名称

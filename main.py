@@ -77,7 +77,7 @@ def sense_voice_th_break():  # 语音识别(实时语音打断模式)
             time.sleep(0.1)
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def switch_voice(event=None):  # 切换语音模式
     if asr_menu.get() == "实时语音识别":
         voice_var.set("关闭语音识别")

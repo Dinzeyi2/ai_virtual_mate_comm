@@ -215,7 +215,7 @@ def chat_llm(msg):  # 大语言模型聊天
         return f"{llm_menu.get()}服务未正确设置，请前往软件设置→云端AI Key设置"
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def chat_dify(msg):  # Dify聊天助手
     headers = {"Authorization": f"Bearer {dify_key}", "Content-Type": "application/json"}
     data = {"query": msg, "inputs": {}, "response_mode": "blocking", "user": username, "conversation_id": None}

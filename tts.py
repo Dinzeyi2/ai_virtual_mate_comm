@@ -67,7 +67,7 @@ def custom_tts(text):  # 自定义TTS
         response.stream_to_file(voice_path)
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def get_tts_play(text):  # 语音合成并播放
     global play_tts_flag
     play_tts_flag = 1

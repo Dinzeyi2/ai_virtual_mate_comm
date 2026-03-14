@@ -34,7 +34,7 @@ def normal_chat(msg):  # 普通对话
     get_tts_play(bot_response)
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def open_app_select(msg):  # 打开软件
     def find_app_path(app_path):
         possible_paths = [

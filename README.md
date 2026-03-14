@@ -2,7 +2,7 @@
 
 ![GitHub license](https://img.shields.io/github/license/MewCo-AI/ai_virtual_mate_comm?style=flat-square) ![GitHub stars](https://img.shields.io/github/stars/MewCo-AI/ai_virtual_mate_comm?style=flat-square) ![GitHub forks](https://img.shields.io/github/forks/MewCo-AI/ai_virtual_mate_comm?style=flat-square)
 
-**枫云AI虚拟伙伴社区版(原Web版)**是一个由**MewCo-AI**开源的高自由度的网页二次元AI数字人框架，现已升级至4.0版本。支持声纹识别语音交互、文本对话、语音合成、图像识别、桌宠模式、Live2D/MMD/VRM 3D角色展示、多智能体助手等功能。用户可以通过Web界面或桌宠与虚拟伙伴进行互动，虚拟伙伴能够根据用户的输入进行智能回复，并支持多种语言模型和语音合成引擎。
+**枫云AI虚拟伙伴社区版**是一个由**MewCo-AI**开源的高自由度的网页二次元AI数字人框架，现已升级至4.0版本。支持声纹识别语音交互、文本对话、语音合成、图像识别、桌宠模式、Live2D/MMD/VRM 3D角色展示、多智能体助手等功能。用户可以通过Web界面或桌宠与虚拟伙伴进行互动，虚拟伙伴能够根据用户的输入进行智能回复，并支持多种语言模型和语音合成引擎。
 
 ![](data/image/logo.png)
 
@@ -42,15 +42,15 @@
 
 1. **下载整合包**
 
-   从官方网站下载整合包：[下载链接](https://swordswind.github.io/2024/07/09/mateweb/)
+   从官方网站下载整合包：[下载链接](https://mewco-ai.github.io/2024/07/09/matecomm/)
 
 2. **解压并运行**
 
-   使用7-Zip或Bandizip软件智能解压已下载的安装包，双击运行"枫云AI虚拟伙伴Web版.bat"文件即可启动软件。
+   使用7-Zip或Bandizip软件智能解压已下载的安装包，双击运行"枫云AI虚拟伙伴社区版.bat"文件即可启动软件。
 
 3. **本地AI引擎（可选）**
 
-   如果您希望实现软件的本地运行，可以下载AI虚拟伙伴插件-本地端侧AI引擎DLC：[下载链接](https://swordswind.github.io/2024/03/13/engine/)
+   如果您希望实现软件的本地运行，可以下载AI虚拟伙伴插件-本地端侧AI引擎DLC：[下载链接](https://mewco-ai.github.io/2024/03/13/engine/)
 
 #### 方法二：通过源码安装(面向开发者)
 
@@ -60,7 +60,7 @@
 
    ```bash
    git clone https://github.com/MewCo-AI/ai_virtual_mate_comm.git 
-   cd ai_virtual_mate_web
+   cd ai_virtual_mate_comm
    ```
 
 2. **安装依赖**
@@ -91,7 +91,7 @@
 ### 使用说明
 
 - **启动软件**：双击运行程序，软件主界面将自动弹出。首次使用建议阅读软件使用文档并同意GPL-3.0开源协议。请将屏幕缩放比例调整为100%或125%，以获得最佳视觉体验。
-- **首次使用初始化配置**：双击枫云AI虚拟伙伴Web版.bat打开软件 → 点击右上角软件设置按钮 → 点击右侧云端AI Key设置按钮 → 记事本修改填入对应云端LLM平台的Key → 点击记事本左上角菜单文件，保存 → 关闭记事本和软件，重新运行上述bat文件 → 完成初始化配置
+- **首次使用初始化配置**：双击枫云AI虚拟伙伴社区版.bat打开软件 → 点击右上角软件设置按钮 → 点击右侧云端AI Key设置按钮 → 记事本修改填入对应云端LLM平台的Key → 点击记事本左上角菜单文件，保存 → 关闭记事本和软件，重新运行上述bat文件 → 完成初始化配置
 - **桌面端操作**：软件默认关闭实时语音交互，按下"Alt+x"可切换实时语音开关。打开实时语音交互后，可在任意界面和虚拟伙伴聊天。用户也可以在输入框内输入文本与虚拟伙伴进行对话。
 - **网页端操作**：点击主界面"网页对话"按钮或通过浏览器访问 `http://127.0.0.1:5260` 打开对话网页。
 - **多智能体助手**：在运行模式切换中选择"多智能体助手"，即可使用音乐播放、语音输入、软件控制、文本写作、屏幕翻译、智能家居控制、天气查询、新闻搜索、系统状态监控、联网搜索、视频生成等丰富功能。
@@ -104,7 +104,7 @@
 ## 项目结构
 
 ```
-ai_virtual_mate_web/
+ai_virtual_mate_comm/
 ├── data/                    # 数据文件
 │   ├── cache/               # 缓存文件
 │   ├── db/                  # 配置文件
@@ -218,8 +218,7 @@ ai_virtual_mate_web/
 
 如有任何问题或建议，请联系开发者团队：
 
-- **Email**: mewcoai@foxmail.com
+- **Email**: mewco-ai@foxmail.com
 - **GitHub**: [MewCo-AI](https://github.com/MewCo-AI)
-- **项目主页**: https://swordswind.github.io/2024/07/09/mateweb/
-
+- **项目主页**: https://mewco-ai.github.io/2024/07/09/matecomm/
 - **GitHub仓库**: https://github.com/MewCo-AI/ai_virtual_mate_comm

@@ -6,7 +6,7 @@ from openai import OpenAI
 from gui_sub import *
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def open_setting_w():  # 设置窗口
     def show_menu_set(event):
         menu = Menu(setting_w, tearoff=0)
@@ -170,7 +170,7 @@ def open_setting_w():  # 设置窗口
                 messagebox.showinfo("提示", "没有录制的声纹文件，无需删除")
 
         voiceprint_manage_w = tk.Toplevel(root)
-        voiceprint_manage_w.title("声纹管理 - 枫云AI虚拟伙伴Web版")
+        voiceprint_manage_w.title("声纹管理 - 枫云AI虚拟伙伴社区版")
         original_window_size4 = (315, 110)
         scaled_window_size4 = scaled_size(original_window_size4)
         voiceprint_manage_w.geometry(f"{scaled_window_size4[0]}x{scaled_window_size4[1]}")
@@ -193,7 +193,7 @@ def open_setting_w():  # 设置窗口
         return b64decode(text).decode('utf-8')
 
     setting_w = tk.Toplevel(root)
-    setting_w.title("软件设置 - 枫云AI虚拟伙伴Web版")
+    setting_w.title("软件设置 - 枫云AI虚拟伙伴社区版")
     original_window_size2 = (1020, 635)
     scaled_window_size2 = scaled_size(original_window_size2)
     setting_w.geometry(f"{scaled_window_size2[0]}x{scaled_window_size2[1]}")
@@ -402,9 +402,9 @@ def open_setting_w():  # 设置窗口
     Button(setting_w, text="   更多设置   ", command=open_more_set, bg="green", fg="white").place(
         relx=0.81, rely=0.58)
     Button(setting_w, text=" 开源项目官网 ",
-           command=lambda: wb.open("https://swordswind.github.io/2024/07/09/mateweb/"), bg="#3E92ED", fg="white").place(relx=0.81, rely=0.66)
+           command=lambda: wb.open("https://mewco-ai.github.io/2024/07/09/matecomm/"), bg="#3E92ED", fg="white").place(relx=0.81, rely=0.66)
     Button(setting_w, text="下载本地AI引擎",
-           command=lambda: wb.open("https://swordswind.github.io/2024/03/13/engine/"), bg="#3E92ED", fg="white").place(relx=0.81, rely=0.74)
+           command=lambda: wb.open("https://mewco-ai.github.io/2024/03/13/engine/"), bg="#3E92ED", fg="white").place(relx=0.81, rely=0.74)
     Button(setting_w, text=" 恢复默认设置 ", command=restore_set, bg="#FF7700", fg="white").place(relx=0.81, rely=0.82)
     cancel_btn = Button(setting_w, text="取消", command=setting_w.destroy)
     cancel_btn.place(relx=0.81, rely=0.912)

@@ -7,7 +7,7 @@ vrm_web_template = '''
 <head>
     <meta charset="utf-8">
     <link rel="icon" type="image/png" href="/assets/image/logo.png"/>
-    <title>VRM 3D角色 - 枫云AI虚拟伙伴Web版</title>
+    <title>VRM 3D角色 - 枫云AI虚拟伙伴社区版</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         body {
@@ -538,7 +538,7 @@ vrm_web_template = '''
 '''
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 @app2.route('/')
 def index():
     return render_template_string(vrm_web_template, model_name=vrm_model_name)

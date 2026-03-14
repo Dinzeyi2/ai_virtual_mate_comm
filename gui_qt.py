@@ -86,7 +86,7 @@ class ChatWidget(QWidget):  # 桌宠聊天框
         self.close()
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 class Live2dPet(QMainWindow):  # 桌宠
     def __init__(self):
         super().__init__()

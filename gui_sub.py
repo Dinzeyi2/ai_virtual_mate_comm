@@ -119,7 +119,7 @@ def scaled_size(original_size):  # 缩放窗口大小
     return int(original_size[0] * scaling_factor), int(original_size[1] * scaling_factor)
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def open_live2d_set_w():  # Live2D设置窗口
     def read_settings():
         settings = {}
@@ -169,7 +169,7 @@ def open_live2d_set_w():  # Live2D设置窗口
         entry_model_size.insert(0, settings.get("模型大小", ""))
 
     live2d_set_w = tk.Toplevel(root)
-    live2d_set_w.title("Live2D设置 - 枫云AI虚拟伙伴Web版")
+    live2d_set_w.title("Live2D设置 - 枫云AI虚拟伙伴社区版")
     original_window_size4 = (413, 310)
     scaled_window_size4 = scaled_size(original_window_size4)
     live2d_set_w.geometry(f"{scaled_window_size4[0]}x{scaled_window_size4[1]}")
@@ -259,7 +259,7 @@ def open_mmd_set_w():  # MMD设置窗口
         entry_eye_index.insert(0, settings.get("模型眼索引", ""))
 
     mmd_set_w = tk.Toplevel(root)
-    mmd_set_w.title("MMD 3D设置 - 枫云AI虚拟伙伴Web版")
+    mmd_set_w.title("MMD 3D设置 - 枫云AI虚拟伙伴社区版")
     original_window_size4 = (413, 310)
     scaled_window_size4 = scaled_size(original_window_size4)
     mmd_set_w.geometry(f"{scaled_window_size4[0]}x{scaled_window_size4[1]}")
@@ -308,7 +308,7 @@ def open_vrm_set_w():  # VRM设置窗口
         return vrm_files
 
     vrm_set_w = tk.Toplevel(root)
-    vrm_set_w.title("VRM 3D设置 - 枫云AI虚拟伙伴Web版")
+    vrm_set_w.title("VRM 3D设置 - 枫云AI虚拟伙伴社区版")
     original_window_size4 = (413, 160)
     scaled_window_size4 = scaled_size(original_window_size4)
     vrm_set_w.geometry(f"{scaled_window_size4[0]}x{scaled_window_size4[1]}")
@@ -334,7 +334,7 @@ def open_change_w():  # 资源管理窗口
         os.startfile("data\\music_vmd")
 
     change_w = tk.Toplevel(root)
-    change_w.title("资源管理 - 枫云AI虚拟伙伴Web版")
+    change_w.title("资源管理 - 枫云AI虚拟伙伴社区版")
     original_window_size3 = (1000, 375)
     scaled_window_size3 = scaled_size(original_window_size3)
     change_w.geometry(f"{scaled_window_size3[0]}x{scaled_window_size3[1]}")
@@ -391,7 +391,7 @@ def open_change_w():  # 资源管理窗口
 original_window_size = (1280, 720)
 scaled_window_size = scaled_size(original_window_size)
 root = tk.Tk()
-root.title("枫云AI虚拟伙伴Web版 v4.0")
+root.title("枫云AI虚拟伙伴社区版 v4.0")
 root.geometry(f"{scaled_window_size[0]}x{scaled_window_size[1]}")
 root.attributes('-alpha', 0.95)
 root.configure(bg="#F4F4F4")
@@ -452,7 +452,7 @@ input_box = ScrolledText(root, width=82, height=4, font=("楷体", 18))
 input_box.place(relx=0.175, rely=0.845)
 state_box = Text(root, width=18, height=3, fg="blue")
 state_box.place(relx=0.015, rely=0.88)
-state_box.insert("end", "欢迎使用枫云AI虚拟伙伴Web版")
+state_box.insert("end", "欢迎使用枫云AI虚拟伙伴社区版")
 Label(root, text="内容由AI生成,请仔细甄别", font=("楷体", 10), fg="green").place(relx=0.02, rely=0.97)
 root.iconbitmap("data/image/logo.ico")
 root.bind("<Button-3>", show_menu)

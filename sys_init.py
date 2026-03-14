@@ -9,7 +9,7 @@ with open('data/db/init.db', 'r', encoding='utf-8') as file:
     lines = file.readlines()
 init = int(lines[0].strip())
 if init == 0:
-    user_response = messagebox.askyesno("欢迎使用枫云AI虚拟伙伴Web版",
+    user_response = messagebox.askyesno("欢迎使用枫云AI虚拟伙伴社区版",
                                    "您是否阅读了软件使用文档并同意GPL-3.0开源协议？\n(首次运行加载较长,请耐心等待)\n注意事项:\n1.如果需要使用云端免费模型,首次使用请前往软件设置→云端AI Key设置\n2.本软件公益开源免费,严禁商用、套壳和倒卖,请遵守开源协议使用")
     if user_response:
         with open('data/db/init.db', 'w', encoding="utf-8") as file:
@@ -156,7 +156,7 @@ except Exception as e1:
     messagebox.showerror("启动失败", f"由于误操作设置，导致软件数据损坏\n请参考错误信息来解决:\n{e1}")
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def get_local_ip():  # 获取本机在局域网的IP
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

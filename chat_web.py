@@ -42,7 +42,7 @@ def index():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>对话 - 枫云AI虚拟伙伴Web版</title>
+        <title>对话 - 枫云AI虚拟伙伴社区版</title>
         <link rel="icon" href="/data/image/logo.png" type="image/png">
         <style>
         body{font-family:'Arial',sans-serif;margin:0;padding:0;background-color:#f5f7fa;color:#333;
@@ -205,7 +205,7 @@ def index():
                                   vrm_port=vrm_port, username=username, mate_name=mate_name)
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def handle_bot_reply(user_text):
     global web_chat_history
     bot_reply = chat_llm(user_text)

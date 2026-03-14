@@ -117,7 +117,7 @@ def qwen_vlm_cam(question):
     return response.json()["answer"]
 
 
-# open_source_project_address:https://github.com/swordswind/ai_virtual_mate_web
+# open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def qwen_vlm_screen(question):
     screenshot = pag.screenshot()
     screenshot.save(img_path, "JPEG")
