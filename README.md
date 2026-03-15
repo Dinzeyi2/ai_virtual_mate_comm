@@ -218,7 +218,7 @@ ai_virtual_mate_comm/
 
 如有任何问题或建议，请联系开发者团队：
 
-- **Email**: mewco-ai@foxmail.com
+- **Email**: mewcoai@foxmail.com
 - **GitHub**: [MewCo-AI](https://github.com/MewCo-AI)
 - **项目主页**: https://mewco-ai.github.io/2024/07/09/matecomm/
 - **GitHub仓库**: https://github.com/MewCo-AI/ai_virtual_mate_comm
