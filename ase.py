@@ -1,6 +1,7 @@
 import random
 from llm import *
 from tts import *
+from partner.actionScheduler import run_action
 
 
 def ase_chat(msg):  # 主动对话
@@ -46,6 +47,15 @@ def run_ase_rp():  # 角色扮演聊天模式的主动对话
                 ase_function = random.choice([ase_hello, ase_vlm_screen, ase_context])
             ase_function()
             time.sleep(random.randint(*time_range))
+        if ase_menu.get() != "不主动" and mode_menu.get() == '伴侣模式':
+            print('进入主动调节')
+            time_ranges = {"高活跃": (60, 120), "中活跃": (240, 360)}
+            time_range = time_ranges.get(ase_menu.get(), (480, 660))
+            run_action()
+
+            time.sleep(random.randint(*time_range))
+
+        
         time.sleep(0.1)
 
 

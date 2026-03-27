@@ -60,6 +60,8 @@ def chat_preprocess(msg):  # 聊天预处理
         else:
             if mode_menu.get() == "多智能体助手":
                 content = function_llm(f"{prompt}。你是{mate_name}，是专属于我({username})的多智能体助手，支持调用多种智能体，拥有以下功能：{all_task}。", msg)
+            elif mode_menu.get() == '伴侣模式':
+                content =  chat_llm(msg)
             else:
                 content = chat_llm(msg)
             notice(f"收到{mate_name}回复")
@@ -189,6 +191,7 @@ def chat_llm(msg):  # 大语言模型聊天
             try:
                 res = chat_dify(msg)
                 return res
+            
             except Exception as e:
                 return f"本地Dify聊天助手配置错误，错误详情：{e}"
         elif llm_menu.get() == "AnythingLLM":
@@ -199,15 +202,65 @@ def chat_llm(msg):  # 大语言模型聊天
                 return f"本地AnythingLLM知识库配置错误，错误详情：{e}"
         else:
             try:
-                client = OpenAI(base_url=custom_url, api_key=custom_key)
-                openai_history.append({"role": "user", "content": msg})
-                messages = [{"role": "system", "content": prompt1}]
-                messages.extend(openai_history)
-                completion = client.chat.completions.create(model=custom_model, messages=messages)
-                openai_history.append({"role": "assistant", "content": completion.choices[0].message.content})
-                res = completion.choices[0].message.content
-                if think_filter_switch == "on":
-                    res = res.split("</think>")[-1].strip()
+                if mode_menu.get() == '伴侣模式':
+                    # 配置定义openAi客户端
+                    client = OpenAI(base_url=custom_url, api_key=custom_key)
+                    # 将用户对话加入到历史记录种
+                    openai_history.append({"role": "user", "content": msg})
+                    prompt1 = prompt1 + f"""
+                    请你记住你当前扮演角色的人物状态:
+                    人物当前的位置:{partner_config.get_current_location()},
+                    当前对话的时间段:{partner_config.get_current_time_period()}
+                    当前人物正在干什么:{partner_config.get_current_action()}
+                    当前与用户约定的事:{partner_config.get_agreed_events()[0] if partner_config.get_agreed_events() else "无"}
+                    当前对话场景下用户是否在角色的身边:{partner_config.get_is_user_nearby()}
+                    请你严格按照如下格式进行回答{partner_config.response_rule}
+                    前后回答的逻辑应当连贯
+                    回复中提到的所有事物（人、物品、环境细节）必须与当前状态匹配
+                    不能突然提及另一个地点的东西，除非明确发生了场景转换
+                    场景转换必须通过明确的过渡描述，不能跳跃
+                    """
+                    # 构造系统提示词
+                    messages = [{"role": "system", "content": prompt1}]
+                    # 加入历史对话
+                    messages.extend(openai_history)
+                    # 发送聊天请求
+                    completion = client.chat.completions.create(model=custom_model, messages=messages)
+                    # 获取llm返回消息并添加至历史对话记录
+                    openai_history.append({"role": "assistant", "content": completion.choices[0].message.content})
+                    # 获取llm模型返回消息
+                    res_json = completion.choices[0].message.content
+                    # 更新人物状态
+                    try:
+                        # 将模型回答解析为json对象
+                        res = json.loads(res_json)
+                        partner_config.set_current_action(res['action'])
+                        partner_config.set_current_location(res['location'])
+                        partner_config.set_is_user_nearby(res['is_user_nearby'])
+                        # 约定事件管理更新
+                        if eval(res['is_completion']):
+                            partner_config.take_agreed_event()
+                        if eval(res['is_new_event']):
+                            partner_config.put_agreed_event(res['new_event'])
+                    # 模型未按指定回复则不对模型回复进行json对象解析
+                    except Exception as e:
+
+                        notice('模型未按指定格式回复')
+                        res = res_json
+                    if think_filter_switch == "on":
+                        res = res['message'].split("</think>")[-1].strip()
+                    #  返回模型回复的消息
+                    return res
+                else:
+                    client = OpenAI(base_url=custom_url, api_key=custom_key)
+                    openai_history.append({"role": "user", "content": msg})
+                    messages = [{"role": "system", "content": prompt1}]
+                    messages.extend(openai_history)
+                    completion = client.chat.completions.create(model=custom_model, messages=messages)
+                    openai_history.append({"role": "assistant", "content": completion.choices[0].message.content})
+                    res = completion.choices[0].message.content
+                    if think_filter_switch == "on":
+                        res = res.split("</think>")[-1].strip()
                 return res.strip()
             except Exception as e:
                 return f"自定义API配置错误，错误详情：{e}"

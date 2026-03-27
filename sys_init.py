@@ -155,6 +155,11 @@ except Exception as e1:
     vrm_port = "5263"
     messagebox.showerror("启动失败", f"由于误操作设置，导致软件数据损坏\n请参考错误信息来解决:\n{e1}")
 
+# 加载并初始化伴侣配置信息
+from partner.characterStatus import characterStatus
+partner_config =  characterStatus()
+
+
 
 # open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def get_local_ip():  # 获取本机在局域网的IP
@@ -220,7 +225,7 @@ default_cloud_ai_key_set = {
     "文心百度智能云平台(console.bce.baidu.com/qianfan)": "bce-v3/xxxxx-xxxxx/xxxxx",
     "腾讯混元大模型平台key(console.cloud.tencent.com/hunyuan)": "sk-xxxxxxxxxx",
     "讯飞星火开放平台key(xinghuo.xfyun.cn/sparkapi)": "xxxxx:xxxxx"}
-mode_options = ["角色扮演聊天", "多智能体助手"]
+mode_options = ["角色扮演聊天", "多智能体助手","伴侣模式"]
 voice_options = ["实时语音识别", "自定义唤醒词", "关闭语音识别"]
 llm_options = ["GLM-4-Flash", "通义千问3-8B", "DeepSeek-R1-8B", "文心一言Speed", "腾讯混元Lite", "讯飞星火Lite", "本地Ollama LLM",
                "本地LM Studio", "本地Transformers", "Dify聊天助手", "AnythingLLM", "自定义API-LLM"]
