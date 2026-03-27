@@ -207,6 +207,7 @@ def chat_llm(msg):  # 大语言模型聊天
                     client = OpenAI(base_url=custom_url, api_key=custom_key)
                     # 将用户对话加入到历史记录种
                     openai_history.append({"role": "user", "content": msg})
+                    #TODO: 应该要让模型参考location_options和actions
                     prompt1 = prompt1 + f"""
                     请你记住你当前扮演角色的人物状态:
                     人物当前的位置:{partner_config.get_current_location()},
@@ -237,6 +238,7 @@ def chat_llm(msg):  # 大语言模型聊天
                         partner_config.set_current_action(res['action'])
                         partner_config.set_current_location(res['location'])
                         partner_config.set_is_user_nearby(res['is_user_nearby'])
+                        partner_config.set_current_time_period(res['time_period'])
                         # 约定事件管理更新
                         if eval(res['is_completion']):
                             partner_config.take_agreed_event()

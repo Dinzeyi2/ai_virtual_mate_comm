@@ -42,7 +42,7 @@ def action_push_agreed_event():
         notice(f"推动约定事件出错: {e}")
         return None
 
-
+#TODO llm应该可以在保持主要与用户对话的情况下，根据对话情况自主选择一名人物进行对话
 def action_talk_with_other():
     """LLM扮演的角色与其他角色进行对话"""
     try:
