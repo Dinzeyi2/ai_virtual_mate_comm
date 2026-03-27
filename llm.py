@@ -239,20 +239,25 @@ def chat_llm(msg):  # 大语言模型聊天
                         partner_config.set_current_location(res['location'])
                         partner_config.set_is_user_nearby(res['is_user_nearby'])
                         partner_config.set_current_time_period(res['time_period'])
+                        res_message = res['message']
                         # 约定事件管理更新
                         if eval(res['is_completion']):
                             partner_config.take_agreed_event()
                         if eval(res['is_new_event']):
                             partner_config.put_agreed_event(res['new_event'])
+                        if think_filter_switch == "on":
+                            res_message = res['message'].split("</think>")[-1].strip()
+                    #  返回模型回复的消息
+                        return res_message
                     # 模型未按指定回复则不对模型回复进行json对象解析
                     except Exception as e:
 
                         notice('模型未按指定格式回复')
                         res = res_json
-                    if think_filter_switch == "on":
-                        res = res['message'].split("</think>")[-1].strip()
-                    #  返回模型回复的消息
-                    return res
+                        if think_filter_switch == "on":
+                            res = res.split("</think>")[-1].strip()
+                        #  返回模型回复的消息
+                        return res
                 else:
                     client = OpenAI(base_url=custom_url, api_key=custom_key)
                     openai_history.append({"role": "user", "content": msg})
