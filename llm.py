@@ -207,12 +207,14 @@ def chat_llm(msg):  # 大语言模型聊天
                     client = OpenAI(base_url=custom_url, api_key=custom_key)
                     # 将用户对话加入到历史记录种
                     openai_history.append({"role": "user", "content": msg})
-                    #TODO: 应该要让模型参考location_options和actions
+                    #TODO: 应该要
                     prompt1 = prompt1 + f"""
                     请你记住你当前扮演角色的人物状态:
                     人物当前的位置:{partner_config.get_current_location()},
+                    可供参考的人物位置:{partner_config.get_current_location_options}
                     当前对话的时间段:{partner_config.get_current_time_period()}
                     当前人物正在干什么:{partner_config.get_current_action()}
+                    可供参考的人物行为:{partner_config.get_current_action_options}
                     当前与用户约定的事:{partner_config.get_agreed_events()[0] if partner_config.get_agreed_events() else "无"}
                     当前对话场景下用户是否在角色的身边:{partner_config.get_is_user_nearby()}
                     请你严格按照如下格式进行回答{partner_config.response_rule}
