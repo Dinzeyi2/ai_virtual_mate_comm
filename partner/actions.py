@@ -9,6 +9,7 @@ partner_status = characterStatus()
 def action_self_talking():
     """自言自语 - LLM扮演的角色自己和自己说话"""
     try:
+        print('角色自言自语')
         stop_tts()
         msg = "请你根据当前人物状态信息进行自然自语"
         bot_response = chat_llm(msg)
@@ -24,6 +25,7 @@ def action_self_talking():
 def action_push_agreed_event():
     """主动推进对话到当前约定的事件"""
     try:
+        print('主动推进对话')
         agreed_events = partner_status.get_agreed_events()
         if not agreed_events:
             return None
@@ -45,6 +47,7 @@ def action_talk_with_other():
     """LLM扮演的角色与其他角色进行对话"""
     try:
         stop_tts()
+        print('角色与其他人对话')
         msg = "请你依据你扮演角色的人际关系以及当前状态，在扮演角色的人际关系中选出一个合理的角色进行对话"
         bot_response = chat_llm(msg)
         notice(f"{mate_name}对话")

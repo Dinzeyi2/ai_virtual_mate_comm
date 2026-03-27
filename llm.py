@@ -226,14 +226,14 @@ def chat_llm(msg):  # 大语言模型聊天
                     messages.extend(openai_history)
                     # 发送聊天请求
                     completion = client.chat.completions.create(model=custom_model, messages=messages)
-                    # 获取llm返回消息并添加至历史对话记录
-                    openai_history.append({"role": "assistant", "content": completion.choices[0].message.content})
                     # 获取llm模型返回消息
                     res_json = completion.choices[0].message.content
                     # 更新人物状态
                     try:
                         # 将模型回答解析为json对象
                         res = json.loads(res_json)
+                        # 获取llm返回消息并添加至历史对话记录
+                        openai_history.append({"role": "assistant", "content": res['message']})
                         partner_config.set_current_action(res['action'])
                         partner_config.set_current_location(res['location'])
                         partner_config.set_is_user_nearby(res['is_user_nearby'])

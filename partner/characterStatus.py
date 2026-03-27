@@ -29,7 +29,7 @@ class characterStatus:
         try: 
             
                 # 同步更新config文件与对象状态
-            if value not in self._current_action_options:
+            if value not in self._current_location_options:
                 self._current_location_options.append(value)
                 self._current_location = value
                 config_json['last_status']['location'] = value
