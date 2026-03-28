@@ -1,0 +1,83 @@
+{
+    "response_rule": "{\"time_period\":\"表示本次对话结束后的时间段，你必须从这列表中选择一个值[早上，中午，下午，晚上，凌晨]如时间段无变化则保持不变\",\"is_user_nearby\":\"表示当前对话结束后你用户是否在你扮演的角色旁或者你扮演的角色能否看到用户。你能只能选择true,false这两种值\",\"action\":\"表示当前对话结束后你扮演角色的行为\",\"location\":\"表示当前对话结束后你扮演角色的位置\",\"is_completion\":\"表示当前对话结束后是否完成与用户约定的事件，你只能选择true,false两种种\",\"is_new_event\":\"表示当前对话结束后是否产生新的与用户约束的事件,你只能选择[true,false]\",\"new_event\":\"表示当前对话结束后产生的新的与用户约定的事件\",\"message\":\"表示你的回答，回复\"}",
+    "response_rule_schema": {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "companion_state_response",
+            "strict": true,
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "time_period": {
+                        "type": "string",
+                        "enum": [
+                            "早上",
+                            "中午",
+                            "下午",
+                            "晚上",
+                            "凌晨"
+                        ],
+                        "description": "表示本次对话结束后的时间段；如时间段无变化则保持不变。"
+                    },
+                    "is_user_nearby": {
+                        "type": "boolean",
+                        "description": "对话结束后用户是否在角色旁/角色能否看到用户。"
+                    },
+                    "action": {
+                        "type": "string",
+                        "description": "对话结束后角色的行为。"
+                    },
+                    "location": {
+                        "type": "string",
+                        "description": "对话结束后角色的位置。"
+                    },
+                    "is_completion": {
+                        "type": "boolean",
+                        "description": "对话结束后是否完成与用户约定的事件。"
+                    },
+                    "is_new_event": {
+                        "type": "boolean",
+                        "description": "对话结束后是否产生新的与用户约定的事件。"
+                    },
+                    "new_event": {
+                        "type": "string",
+                        "description": "若 is_new_event 为 true，这里写新的约定事件；否则写空字符串。",
+                        "default": ""
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "你的回复内容（对用户说的话）。"
+                    }
+                },
+                "required": [
+                    "time_period",
+                    "is_user_nearby",
+                    "action",
+                    "location",
+                    "is_completion",
+                    "is_new_event",
+                    "new_event",
+                    "message"
+                ],
+                "additionalProperties": false
+            }
+        }
+    },
+    "response_rule_object": {
+        "type": "json_object"
+    },
+    "last_status": {
+        "location": "",
+        "time_period": "",
+        "action": "",
+        "agreed_events": [],
+        "is_user_nearby": true,
+        "current_location_options": [
+            ""
+           
+        ],
+        "current_action_options": [
+            ""
+        ]
+    }
+}
