@@ -14,7 +14,7 @@ registered_actions = {
     'action_push_agreed_event': action_push_agreed_event
 }
 
-
+# 伴侣模式主动模式入口
 def run_action():
     """先判断条件再执行行为"""
     import random
