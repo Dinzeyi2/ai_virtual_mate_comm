@@ -10,6 +10,8 @@ except Exception as e:
 class characterStatus:
  
     response_rule = config_json['response_rule']
+    response_rule_schema = config_json['response_rule_schema']
+    response_rule_object = config_json['response_rule_object']
 
     def __init__(self):
         # 对象属性
