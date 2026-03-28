@@ -30,7 +30,7 @@ def run_action():
         result = registered_actions['action_push_agreed_event']()
     else:
         # 条件不满足，随机选择行为执行
-        if partner_config.get_agreed_events():
+        if len(partner_config.get_agreed_events()) ==0:
         #如果当前无约定事件
             action_name = random.choice(['action_self_talking', 'action_talk_with_other'])
         else:

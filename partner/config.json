@@ -70,10 +70,8 @@
         "location": "家里",
         "time_period": "晚上",
         "action": "继续交谈",
-        "agreed_events": [
-            ""
-        ],
-        "is_user_nearby": "true",
+        "agreed_events": [],
+        "is_user_nearby": true,
         "current_location_options": [
             "",
             "家门口",
