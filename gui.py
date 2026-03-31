@@ -359,7 +359,7 @@ def open_setting_w():  # 设置窗口
     weather_city_entry.insert("end", weather_city)
     weather_city_entry.place(relx=0.62, rely=0.93)
     Label(setting_w, text="图像生成引擎:").place(relx=0.82, rely=0.098)
-    draw_options = ["云端CogView-3", "云端Kolors", "云端文心Web", "本地Janus整合包", "本地SD API", "关闭AI绘画"]
+    draw_options = ["云端CogView-3", "云端Kolors", "云端文心Web", "本地Janus整合包", "本地SD API","关闭AI绘画","comfyui"]
     draw_var = StringVar(setting_w)
     draw_var.set(prefer_draw)
     draw_menu = ttk.Combobox(setting_w, textvariable=draw_var, values=draw_options, width=14, state="readonly",
