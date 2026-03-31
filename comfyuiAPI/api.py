@@ -2,7 +2,7 @@ import websocket
 import json
 import uuid
 import requests
-import time
+from gui_sub import notice
 
 # ComfyUI服务器地址常量
 DEFAULT_SERVER_ADDRESS = "u826849-774757226f50.bjb1.seetacloud.com:8443"
@@ -14,29 +14,49 @@ class ComfyUIWebSocketClient:
         self.client_id = str(uuid.uuid4())
         self.ws = None
         self.result = None
+        # 在初始化时建立WebSocket连接
+        self._create_websocket_connection()
+
+    def _create_websocket_connection(self):
+        """创建WebSocket连接"""
+        ws_url = f"wss://{self.server_address}/ws?clientId={self.client_id}"
+        try:
+            self.ws = websocket.create_connection(ws_url)
+        except Exception as e:
+            raise ConnectionError(f"与ComfyUI服务器建立WebSocket连接失败: {e}")
+
+    def _is_websocket_available(self):
+        """检查WebSocket连接是否可用"""
+        if self.ws is None:
+            return False
+        try:
+            # 通过发送ping来检查连接是否存活
+            self.ws.ping()
+            return True
+        except:
+            return False
 
     def send_prompt(self, workflow):
         """
         通过WebSocket发送工作流
         """
-        # 连接WebSocket
-        ws_url = f"wss://{self.server_address}/ws?clientId={self.client_id}"
-        self.ws = websocket.create_connection(ws_url)
+        # 检查WebSocket连接是否可用，不可用则重新创建
+        if not self._is_websocket_available():
+            self._create_websocket_connection()
 
-        # 发送POST请求
-        prompt_endpoint = f"https://{self.server_address}/api/prompt"
-        payload = {
-            "prompt": workflow,
-            "client_id": self.client_id
+        # 通过WebSocket发送prompt
+        prompt_data = {
+            "type": "prompt",
+            "data": {
+                "prompt": workflow,
+                "client_id": self.client_id
+            }
         }
+        self.ws.send(json.dumps(prompt_data))
 
-        response = requests.post(
-            prompt_endpoint,
-            json=payload,
-            headers={"Content-Type": "application/json"}
-        )
-
-        return response.json()
+        # 等待服务器响应（包含prompt_id）
+        response = self.ws.recv()
+        return json.loads(response)
 
     def listen_progress(self, prompt_id):
         """
