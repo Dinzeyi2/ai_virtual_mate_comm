@@ -1,4 +1,8 @@
 __pycache__/
 partner/__pycache__/
-data/db/
 partner/*test*
+partner/ss.md
+comfyuiAPI/output/
+.claude
+
+
