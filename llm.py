@@ -207,7 +207,6 @@ def chat_llm(msg):  # 大语言模型聊天
                     client = OpenAI(base_url=custom_url, api_key=custom_key)
                     # 将用户对话加入到历史记录种
                     openai_history.append({"role": "user", "content": msg})
-                    #TODO: 约定事件的更新与删除逻辑需要修改,没有正确移除已完成的约定事件
                     # 判断约定事件列表是否为空
                     if len(partner_config.get_agreed_events()) == 0:
                         current_event = ''
@@ -221,16 +220,18 @@ def chat_llm(msg):  # 大语言模型聊天
                     当前对话的时间段:{partner_config.get_current_time_period()}
                     当前人物正在干什么:{partner_config.get_current_action()}
                     可供参考的人物行为:{partner_config.get_current_action_options()}
-                    当前与用户约定的事:{current_event}
+                    当前与用户约定的事:{current_event}(不必每次对话都要说一遍，只说一次就可以了)
                     当前待完成的约定事件:{partner_config.get_agreed_events()}
                     当前对话场景下用户是否在角色的身边:{partner_config.get_is_user_nearby()}
                     请你严格遵循以下要求：
                     在你遵循回答格式进行回答的时候如：人物位置和行为在对应参考列表里有相同意思的选择则选择参考列表里的选项
+                    在你遵循回答格式进行回答的时候:如你扮演的角色与他人对话则他人说话的内容应当放到"()"表示
                     在你遵循回答格式进行回答的时候如：产生的新的约定事件在待完成的约定事件列表里有相同意思的事件则不要添加新的约定事件且回答中is_new_event设置为False
                     前后回答的逻辑应当连贯
                     回复中提到的所有事物（人、物品、环境细节）必须与当前状态匹配
                     不能突然提及另一个地点的东西，除非明确发生了场景转换
                     场景转换必须通过明确的过渡描述，不能跳跃
+            
                     """
                     # 构造系统提示词
                     messages = [{"role": "system", "content": prompt1}]
@@ -256,6 +257,13 @@ def chat_llm(msg):  # 大语言模型聊天
                         partner_config.set_current_location(res['location'])
                         partner_config.set_is_user_nearby(res['is_user_nearby'])
                         partner_config.set_current_time_period(res['time_period'])
+                        # 更新下一次主动行为
+                        choice_next_action = res.get('choice_next_action', {})
+                        if choice_next_action and choice_next_action.get('action'):
+                            partner_config.set_choice_next_action(
+                                choice_next_action['action'],
+                                choice_next_action.get('params')
+                            )
                         res_message = res['message']
                         # 约定事件管理更新
                         if res['is_completion']:

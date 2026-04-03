@@ -22,6 +22,7 @@ class characterStatus:
         self._current_location_options = config_json['last_status']['current_location_options']  # 初始化自迭代的可选角色位置选项
         self._current_action_options = config_json['last_status']['current_action_options']  # 初始化自迭代的可选角色行为选项
         self._is_user_nearby = config_json['last_status']['is_user_nearby']  # 初始化用户是否在角色身边
+        self._choice_next_action = config_json['last_status']['choice_next_action']  # 初始化下一次主动行为的配置
 
     # current_location
     def get_current_location(self):
@@ -133,6 +134,25 @@ class characterStatus:
                 json.dump(config_json, f, ensure_ascii=False, indent=4)
         except Exception as e:
             raise Exception(f"伴侣配置文件同步错误{e}")
+
+    # choice_next_action
+    def get_choice_next_action(self):
+        """获取下一次主动行为的配置，返回 {"action": "...", "params": {...}} 或 {"action": "...", "params": null}"""
+        return self._choice_next_action
+
+    def set_choice_next_action(self, action, params=None):
+        """设置下一次主动行为的配置
+        Args:
+            action: 行为名称，如 "action_self_talking"
+            params: 行为参数，如 {"character_name": "甘雨"} 或 None
+        """
+        try:
+            self._choice_next_action = {"action": action, "params": params}
+            config_json['last_status']['choice_next_action'] = self._choice_next_action
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(config_json, f, ensure_ascii=False, indent=4)
+        except Exception as e:
+            raise Exception(f"伴侣配置文件同步错误{e}")
     
 
     
@@ -142,7 +162,6 @@ if __name__ == '__main__':
     print(a.get_current_action_options())
     print(a.get_current_location_options())
 
-    a.set_agreed_events('下午和哥哥去买东西')
     a.set_current_action('工作')
     a.set_current_location('家')
     a.set_current_time_period('早上')

@@ -1,7 +1,8 @@
 import random
 from llm import *
 from tts import *
-from partner.actionScheduler import run_action
+from partner.actionScheduler import *
+from sys_init import partner_config
 
 
 def ase_chat(msg):  # 主动对话
@@ -51,7 +52,20 @@ def run_ase_rp():  # 角色扮演聊天模式的主动对话
             print('进入主动调节')
             time_ranges = {"高活跃": (60, 120), "中活跃": (240, 360)}
             time_range = time_ranges.get(ase_menu.get(), (480, 660))
-            run_action()
+            try:
+                choice_next_action = partner_config.get_choice_next_action()
+                action_func = registered_actions.get(choice_next_action.get('action'))
+                if action_func:
+                    params = choice_next_action.get('params')
+                    if params:
+                        action_func(**params)
+                    else:
+                        action_func()
+                else:
+                    run_action()
+            except Exception as e:
+                print(f"执行choice_next_action异常: {e}")
+                run_action()
 
             time.sleep(random.randint(*time_range))
 

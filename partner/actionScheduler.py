@@ -1,4 +1,4 @@
-from partner.actions import action_self_talking, action_talk_with_other, action_push_agreed_event
+from partner.actions import action_self_talking,action_push_agreed_event,action_express_body_state,action_interact_with_environment
 from sys_init import partner_config
 # 调用次数记录
 action_counts = {
@@ -10,8 +10,9 @@ action_counts = {
 # 行为注册表
 registered_actions = {
     'action_self_talking': action_self_talking,
-    'action_talk_with_other': action_talk_with_other,
-    'action_push_agreed_event': action_push_agreed_event
+    'action_push_agreed_event': action_push_agreed_event,
+    'action_express_body_state': action_express_body_state,
+    'action_interact_with_environment': action_interact_with_environment
 }
 
 # 伴侣模式主动模式入口
@@ -29,12 +30,12 @@ def run_action():
         action_counts['action_push_agreed_event'] += 1
         result = registered_actions['action_push_agreed_event']()
     else:
-        # 条件不满足，随机选择行为执行
-        if len(partner_config.get_agreed_events()) ==0:
-        #如果当前无约定事件
-            action_name = random.choice(['action_self_talking', 'action_talk_with_other'])
-        else:
-            action_name = random.choice(['action_self_talking', 'action_talk_with_other', 'action_push_agreed_event'])
+        # 条件不满足，从registered_actions的key中随机选择行为执行
+        action_list = list(registered_actions.keys())
+        if len(partner_config.get_agreed_events()) == 0:
+            # 如果当前无约定事件，从列表中排除action_push_agreed_event
+            action_list = [k for k in action_list if k != 'action_push_agreed_event']
+        action_name = random.choice(action_list)
         result = registered_actions[action_name]()
         action_counts[action_name] += 1
 

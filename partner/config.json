@@ -104,22 +104,27 @@
         "type": "json_object"
     },
     "last_status": {
-        "location": "",
-        "time_period": "",
-        "action": "",
+        "location": "家中",
+        "time_period": "早上",
+        "action": "起床",
         "agreed_events": [
             "和哥哥一起吃早餐"
         ],
         "is_user_nearby": "true",
         "current_location_options": [
             "",
-            ""
+            "家中"
         ],
         "current_action_options": [
-            ""
+            "",
+            "休息",
+            "查看刻晴带来的紧急文件",
+            "处理刻晴带来的紧急文件",
+            "起床"
         ],
         "choice_next_action": {
-            
+            "action": "action_express_body_state",
+            "params": null
         }
     }
 }

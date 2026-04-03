@@ -4,5 +4,6 @@ partner/*test*
 partner/ss.md
 comfyuiAPI/output/
 .claude
-
+partner/config.json
+data/db
 
