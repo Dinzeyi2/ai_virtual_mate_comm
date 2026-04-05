@@ -25,6 +25,8 @@ class characterStatus:
         self._current_action_options = config_json['last_status']['current_action_options']
         self._is_user_nearby = config_json['last_status']['is_user_nearby']
         self._choice_next_action = config_json['last_status']['choice_next_action']
+        self._destination_llm = config_json['last_status'].get('destination_llm', '')
+        self._destination_user = config_json['last_status'].get('destination_user', '')
 
     def _save(self):
         """将内存状态同步写入配置文件"""
@@ -37,6 +39,8 @@ class characterStatus:
             config_json['last_status']['current_action_options'] = self._current_action_options
             config_json['last_status']['is_user_nearby'] = self._is_user_nearby
             config_json['last_status']['choice_next_action'] = self._choice_next_action
+            config_json['last_status']['destination_llm'] = self._destination_llm
+            config_json['last_status']['destination_user'] = self._destination_user
             with open(config_path, 'w', encoding='utf-8') as f:
                 json.dump(config_json, f, ensure_ascii=False, indent=4)
         except Exception as e:
@@ -130,6 +134,31 @@ class characterStatus:
         """
         try:
             self._choice_next_action = {"action": action, "params": params}
+            self._save()
+        except Exception as e:
+            raise Exception(f"伴侣配置文件同步错误{e}")
+
+    # destination_llm / destination_user
+    def get_destination_llm(self):
+        """获取 LLM 扮演的角色要前往的目的地"""
+        return self._destination_llm
+
+    def set_destination_llm(self, value):
+        """设置 LLM 扮演的角色要前往的目的地"""
+        try:
+            self._destination_llm = value
+            self._save()
+        except Exception as e:
+            raise Exception(f"伴侣配置文件同步错误{e}")
+
+    def get_destination_user(self):
+        """获取用户要前往的目的地"""
+        return self._destination_user
+
+    def set_destination_user(self, value):
+        """设置用户要前往的目的地"""
+        try:
+            self._destination_user = value
             self._save()
         except Exception as e:
             raise Exception(f"伴侣配置文件同步错误{e}")

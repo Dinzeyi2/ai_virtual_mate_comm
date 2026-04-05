@@ -6,6 +6,7 @@
 
 import json
 from tts import notice
+from partner.actionScheduler import reset_push_count
 
 
 def build_companion_prompt(base_prompt, partner_config):
@@ -24,6 +25,8 @@ def build_companion_prompt(base_prompt, partner_config):
                     当前与用户约定的事:{current_event}
                     待完成的约定事件:{partner_config.get_agreed_events()}
                     当前对话场景下用户是否在角色的身边:{partner_config.get_is_user_nearby()}
+                    你当前要前往的目的地:{partner_config.get_destination_llm()}
+                    用户当前要前往的目的地:{partner_config.get_destination_user()}
                     请你严格遵循以下要求：
                     在你遵循回答格式进行回答的时候如：人物位置和行为在对应参考列表里有相同意思的选择则选择参考列表里的选项
                     在你遵循回答格式进行回答的时候:如你扮演的角色与他人对话则他人说话的内容应当放到"()"表示
@@ -64,6 +67,12 @@ def update_companion_state(partner_config, res_json, openai_history, think_filte
     if res['is_new_event']:
         partner_config.put_agreed_event(res['new_event'])
 
+    # 目的地管理
+    if 'next_destination_llm' in res:
+        partner_config.set_destination_llm(res['next_destination_llm'])
+    if 'next_destination_user' in res:
+        partner_config.set_destination_user(res['next_destination_user'])
+
     # 返回消息处理
     res_message = res['message']
     if think_filter_switch == "on":
@@ -86,6 +95,9 @@ def companion_chat(msg, openai_history, client, custom_model, partner_config, th
     Returns:
         回复消息字符串
     """
+    # 用户发起对话，重置连续推进计数
+    reset_push_count()
+
     # 构建提示词
     prompt1 = build_companion_prompt(base_prompt, partner_config)
 

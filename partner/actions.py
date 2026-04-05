@@ -11,7 +11,7 @@ Actions 准则：
 
 
 def _run_action(msg, notice_text, stream_prefix):
-    """行为执行模板函数，消除各 action 的重复代码"""
+    """行为执行模板函数"""
     try:
         stop_tts()
         bot_response = chat_llm(msg)
