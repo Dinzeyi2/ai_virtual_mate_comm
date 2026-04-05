@@ -54,12 +54,15 @@ def update_companion_state(partner_config, res_json, openai_history, think_filte
     partner_config.set_current_time_period(res['time_period'])
 
     # 更新下一次主动行为
-    choice_next_action = res.get('choice_next_action', {})
-    if choice_next_action and choice_next_action.get('action'):
-        partner_config.set_choice_next_action(
-            choice_next_action['action'],
-            choice_next_action.get('params')
-        )
+    try:
+        choice_next_action = res.get('choice_next_action', {})
+        if choice_next_action and choice_next_action.get('action'):
+            partner_config.set_choice_next_action(
+                choice_next_action['action'],
+                choice_next_action.get('params')
+            )
+    except Exception as e:
+        print('模型返回的choice_next_action格式不对，错误信息:{e}')
 
     # 约定事件管理
     if res['is_completion']:
