@@ -54,21 +54,16 @@ def run_ase_rp():  # 角色扮演聊天模式的主动对话
             time_range = time_ranges.get(ase_menu.get(), (480, 660))
             try:
                 choice_next_action = partner_config.get_choice_next_action()
-                action_name = choice_next_action.get('action')
-                # 连续推进达到上限时跳过推动约定事件
-                if action_name == 'action_push_agreed_event' and _should_skip_push():
-                    run_action()
-                else:
-                    action_func = registered_actions.get(action_name)
-                    if action_func:
-                        params = choice_next_action.get('params')
-                        if params:
-                            action_func(**params)
-                        else:
-                            action_func()
-                        if action_name == 'action_push_agreed_event':
-                            _record_push_executed()
+                action_name = choice_next_action.get('action')       
+                action_func = registered_actions.get(action_name)
+                if action_func:
+                    params = choice_next_action.get('params')
+                    if params:
+                        action_func(**params)
                     else:
+                        action_func()
+                   
+                else:
                         run_action()
             except Exception as e:
                 print(f"执行choice_next_action异常: {e}")
