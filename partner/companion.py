@@ -6,7 +6,6 @@
 
 import json
 from tts import notice
-from partner.actionScheduler import reset_push_count
 
 
 def build_companion_prompt(base_prompt, partner_config):
@@ -31,6 +30,7 @@ def build_companion_prompt(base_prompt, partner_config):
                     在你遵循回答格式进行回答的时候如：人物位置和行为在对应参考列表里有相同意思的选择则选择参考列表里的选项
                     在你遵循回答格式进行回答的时候:如你扮演的角色与他人对话则他人说话的内容应当放到"()"表示
                     在你遵循回答格式进行回答的时候:严禁在你的回答中多次强调与用户约定的内容{partner_config.get_agreed_events()}
+                
                     在你遵循回答格式进行回答的时候如：产生的新的约定事件在待完成的约定事件列表里有相同意思的事件则不要添加新的约定事件且回答中is_new_event设置为False
                     前后回答的逻辑应当连贯
                     回复中提到的所有事物（人、物品、环境细节）必须与当前状态匹配
@@ -96,7 +96,6 @@ def companion_chat(msg, openai_history, client, custom_model, partner_config, th
         回复消息字符串
     """
     # 用户发起对话，重置连续推进计数
-    reset_push_count()
 
     # 构建提示词
     prompt1 = build_companion_prompt(base_prompt, partner_config)
