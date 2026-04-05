@@ -1,5 +1,5 @@
 {
-    "response_rule": "{\"time_period\":\"表示本次对话结束后的时间段，你必须从这列表中选择一个值[早上，中午，下午，晚上，凌晨]如时间段无变化则保持不变\",\"is_user_nearby\":\"表示当前对话结束后你用户是否在你扮演的角色旁或者你扮演的角色能否看到用户。你能只能选择true,false这两种值\",\"action\":\"表示当前对话结束后你扮演角色的行为\",\"location\":\"表示当前对话结束后你扮演角色的位置\",\"is_completion\":\"表示当前对话结束后是否完成与用户约定的事件，你只能选择true,false两种种\",\"is_new_event\":\"表示当前对话结束后是否产生新的与用户约束的事件,你只能选择[true,false]\",\"new_event\":\"表示当前对话结束后产生的新的与用户约定的事件\",\"message\":\"表示你的回答，回复\",\"choice_next_action\":\"表示当前对话结束后，如果你扮演的角色要主动发起对话的行为，你必须从以下列表中选择一个值[{\"action\": \"action_self_talking\", \"params\": null},{\"action\": \"action_push_agreed_event\", \"params\": null},{\"action\": \"action_express_body_state\", \"params\": null},{\"action\": \"action_interact_with_environment\", \"params\": null},{\"action\": \"action_talk_with_other\", \"params\": {\"character_name\": \"\"}}]\"}",
+    "response_rule": "{\"time_period\":\"表示本次对话结束后的时间段，你必须从这列表中选择一个值[早上，中午，下午，晚上，凌晨]如时间段无变化则保持不变\",\"is_user_nearby\":\"表示当前对话结束后你用户是否在你扮演的角色旁或者你扮演的角色能否看到用户。你能只能选择true,false这两种值\",\"action\":\"表示当前对话结束后你扮演角色的行为\",\"location\":\"表示当前对话结束后你扮演角色的位置\",\"is_completion\":\"表示当前对话结束后是否完成与用户约定的事件，你只能选择true,false两种值\",\"is_new_event\":\"表示当前对话结束后是否产生新的与用户约束的事件,你只能选择[true,false]\",\"new_event\":\"表示当前对话结束后产生的新的与用户约定的事件\",\"message\":\"表示你的回答，回复\",\"choice_next_action\":\"表示当前对话结束后，角色主动发起下一步行为的选择。你必须根据当前情境从以下选项中选择最合适的一个——action_self_talking：角色独处、无明确事项时，进行自言自语或内心独白；action_push_agreed_event：当前存在与用户未完成的约定事件时，优先选择此项来推进事件；action_express_body_state：角色有明显身体状态需要表达时才选（如饿、累、困、冷等），不可随意滥用；action_interact_with_environment：角色在当前位置有可互动的环境元素时选择；action_talk_with_other：角色需要主动找其他人说话时选择，需同时填写character_name；action_default：不符合以上任何情境时选择此默认项。你必须从以下列表中选择一个值[{\"action\": \"action_self_talking\", \"params\": null},{\"action\": \"action_push_agreed_event\", \"params\": null},{\"action\": \"action_express_body_state\", \"params\": null},{\"action\": \"action_interact_with_environment\", \"params\": null},{\"action\": \"action_talk_with_other\", \"params\": {\"character_name\": \"\"}},{\"action\": \"action_default\",\"params\": null }]\"}",
     "response_rule_schema": {
         "type": "json_schema",
         "json_schema": {
@@ -50,7 +50,7 @@
                     },
                     "choice_next_action": {
                         "type": "object",
-                        "description": "当前对话结束后角色可选的主动行为。",
+                        "description": "对话结束后角色主动发起下一步行为的选择，根据当前情境判断最合适的一项。",
                         "properties": {
                             "action": {
                                 "type": "string",
@@ -59,9 +59,10 @@
                                     "action_push_agreed_event",
                                     "action_express_body_state",
                                     "action_interact_with_environment",
-                                    "action_talk_with_other"
+                                    "action_talk_with_other",
+                                    "action_default"
                                 ],
-                                "description": "可选的行为名称。"
+                                "description": "根据情境选择最合适的行为：action_self_talking（独处无事时自言自语）；action_push_agreed_event（有未完成约定事件时优先选此）；action_express_body_state（有明显身体状态如饿/累/困时选，不可滥用）；action_interact_with_environment（当前环境有可互动元素时选）；action_talk_with_other（需主动找其他人说话时选，需填character_name）；action_default（不符合以上任何情境时选）。"
                             },
                             "params": {
                                 "type": "object",
@@ -104,26 +105,21 @@
         "type": "json_object"
     },
     "last_status": {
-        "location": "家中",
-        "time_period": "早上",
-        "action": "起床",
+        "location": "海亭",
+        "time_period": "",
+        "action": "",
         "agreed_events": [
-            "和哥哥一起吃早餐"
+           
         ],
-        "is_user_nearby": "true",
+        "is_user_nearby": true,
         "current_location_options": [
-            "",
-            "家中"
+          
         ],
         "current_action_options": [
-            "",
-            "休息",
-            "查看刻晴带来的紧急文件",
-            "处理刻晴带来的紧急文件",
-            "起床"
+          
         ],
         "choice_next_action": {
-            "action": "action_express_body_state",
+            "action": "action_push_agreed_event",
             "params": null
         }
     }

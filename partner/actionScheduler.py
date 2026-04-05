@@ -1,4 +1,4 @@
-from partner.actions import action_self_talking,action_push_agreed_event,action_express_body_state,action_interact_with_environment
+from partner.actions import action_self_talking,action_push_agreed_event,action_express_body_state,action_interact_with_environment,action_default
 from sys_init import partner_config
 # 调用次数记录
 action_counts = {
@@ -12,7 +12,8 @@ registered_actions = {
     'action_self_talking': action_self_talking,
     'action_push_agreed_event': action_push_agreed_event,
     'action_express_body_state': action_express_body_state,
-    'action_interact_with_environment': action_interact_with_environment
+    'action_interact_with_environment': action_interact_with_environment,
+    'action_default': action_default
 }
 
 # 伴侣模式主动模式入口

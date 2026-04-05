@@ -47,21 +47,21 @@ def action_push_agreed_event():
         return None
 
 
-# #TODO llm应该可以在保持主要与用户对话的情况下，根据对话情况自主选择一名人物进行对话
-# def action_talk_with_other():
-#     """LLM扮演的角色与其他角色进行对话"""
-#     try:
-#         stop_tts()
-#         print('角色与其他人对话')
-#         msg = "请你依据你扮演角色的人际关系以及当前状态，在扮演角色的人际关系中选出一个合理的角色进行对话"
-#         bot_response = chat_llm(msg)
-#         notice(f"{mate_name}对话")
-#         stream_insert(f"{mate_name}:\n    {bot_response}\n")
-#         get_tts_play(bot_response)
-#         return bot_response
-#     except Exception as e:
-#         notice(f"与其他角色对话出错: {e}")
-#         return None
+#TODO llm应该可以在保持主要与用户对话的情况下，根据对话情况自主选择一名人物进行对话
+def action_talk_with_other(name):
+    """LLM扮演的角色与其他角色进行对话"""
+    try:
+        stop_tts()
+        print(f'角色与{name}对话')
+        msg = "请你依据你扮演角色的人际关系以及当前状态，在扮演角色的人际关系中选出一个合理的角色进行对话"
+        bot_response = chat_llm(msg)
+        notice(f"{mate_name}对话")
+        stream_insert(f"{mate_name}与{name}对话:\n    {bot_response}\n")
+        get_tts_play(bot_response)
+        return bot_response
+    except Exception as e:
+        notice(f"与其他角色对话出错: {e}")
+        return None
 
 
 def action_express_body_state():
@@ -99,3 +99,21 @@ def action_interact_with_environment():
     except Exception as e:
         notice(f"与环境互动出错: {e}")
         return None
+    
+def action_default():
+    """正常与用户对话"""
+    try:
+        
+        stop_tts()
+        msg = """        
+        请你根据当前人物状态信息，所在环境以及历史对话说出你扮演角色的下一句话s
+        """
+        bot_response = chat_llm(msg)
+        notice(f"{mate_name}")
+        stream_insert(f"{mate_name}\n    {bot_response}\n")
+        get_tts_play(bot_response)
+        return bot_response
+    except Exception as e:
+        notice(f"与环境互动出错: {e}")
+        return None
+
