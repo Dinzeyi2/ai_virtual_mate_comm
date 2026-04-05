@@ -1,19 +1,11 @@
-from partner.actions import action_self_talking,action_push_agreed_event,action_express_body_state,action_interact_with_environment,action_default
+from partner.actions import registered_actions
 from sys_init import partner_config
-# 调用次数记录
+
+# 行为调用计数 (只计数需要防沉迷判断的行为)
 action_counts = {
     'action_self_talking': 0,
     'action_talk_with_other': 0,
-    'action_push_agreed_event': 0
-}
-
-# 行为注册表
-registered_actions = {
-    'action_self_talking': action_self_talking,
-    'action_push_agreed_event': action_push_agreed_event,
-    'action_express_body_state': action_express_body_state,
-    'action_interact_with_environment': action_interact_with_environment,
-    'action_default': action_default
+    'action_push_agreed_event': 0,
 }
 
 # 伴侣模式主动模式入口
@@ -26,15 +18,15 @@ def run_action():
 
     if other_actions_count >= 2:
         # 条件满足，强制触发推动约定事件
-        action_counts['action_self_talking'] = 0
-        action_counts['action_talk_with_other'] = 0
+        for key in action_counts:
+            action_counts[key] = 0
         action_counts['action_push_agreed_event'] += 1
         result = registered_actions['action_push_agreed_event']()
     else:
-        # 条件不满足，从registered_actions的key中随机选择行为执行
+        # 条件不满足，从 registered_actions 中随机选择行为执行
         action_list = list(registered_actions.keys())
         if len(partner_config.get_agreed_events()) == 0:
-            # 如果当前无约定事件，从列表中排除action_push_agreed_event
+            # 如果当前无约定事件，从列表中排除 action_push_agreed_event
             action_list = [k for k in action_list if k != 'action_push_agreed_event']
         action_name = random.choice(action_list)
         result = registered_actions[action_name]()
