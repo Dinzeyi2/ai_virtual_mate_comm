@@ -2,8 +2,11 @@ import ctypes
 import json
 import socket
 import shutil
+import hashlib
+from threading import Thread
 from subprocess import Popen
 from tkinter import filedialog as fd, messagebox
+from openai import OpenAI
 
 with open('data/db/init.db', 'r', encoding='utf-8') as file:
     lines = file.readlines()
@@ -160,6 +163,82 @@ from partner.characterStatus import characterStatus
 partner_config =  characterStatus()
 
 
+def _custom_api_response_format_detect():
+    """启动时检测自定义API的response_format支持能力（仅配置变化时执行）"""
+    print('进入自定义api格式支持测试')
+    url = config.get("自定义API-base_url", "")
+    key = config.get("自定义API-api_key", "")
+    model = config.get("自定义API-model", "")
+
+    def _detect():
+        print(f'进入_detect线程: url={url!r}, key={key!r}, model={model!r}')
+        if not url or not key or not model:
+            print('跳过：配置不完整')
+            return
+
+        config_str = f"{url}|{key}|{model}"
+        current_hash = hashlib.md5(config_str.encode()).hexdigest()
+        last_hash = config.get("自定义API-response_format_config_hash", "")
+        last_result = config.get("自定义API-response_format能力", "")
+        print(f'指纹对比: current={current_hash}, last={last_hash}, result={last_result}')
+
+        if current_hash == last_hash and last_result and last_result != "pending":
+            print('跳过：配置未变化且已有结果')
+            return
+
+        print('开始API检测...')
+        try:
+            
+            client = OpenAI(base_url=url, api_key=key, timeout=100)
+            print('测试 JSON Schema 支持')
+            client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": "Hi"}],
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "test",
+                        "schema": {
+                            "type": "object",
+                            "properties": {"ok": {"type": "boolean"}},
+                            "required": ["ok"]
+                        }
+                    }
+                }
+            )
+            print('JSON Schema 测试通过')
+            config["自定义API-response_format能力"] = "schema"
+        except Exception as e1:
+            print('JSON Schema 测试不通过')
+            print(e1)
+            try:
+                print('测试 JSON Object 支持')
+                client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "system", "content": "你的回复必须遵守以下json格式格式{\"message\":\"你的回复，回答内容\"}"},{"role": "user", "content": "回复格式{\"message\":\"你的回复，回答内容\"}"}],
+                    response_format={"type": "json_object"}
+                )
+                print('JSON Object 测试通过')
+                config["自定义API-response_format能力"] = "json_object"
+            except Exception as e:
+                print('JSON Schema 测试不通过')
+                print(e)
+                config["自定义API-response_format能力"] = "none"
+        
+           
+                
+
+        config["自定义API-response_format_config_hash"] = current_hash
+        with open('data/db/config.json', 'w', encoding='utf-8') as f:
+            json.dump(config, f, ensure_ascii=False, indent=4)
+        print(f'检测完成，结果: {config.get("自定义API-response_format能力")}')
+
+    Thread(target=_detect, daemon=True).start()
+
+
+_custom_api_response_format_detect()
+
+
 
 # open_source_project_address:https://github.com/MewCo-AI/ai_virtual_mate_comm
 def get_local_ip():  # 获取本机在局域网的IP
@@ -210,7 +289,9 @@ default_config = {
     "桌宠位置y": "70", "实时语音打断": "关闭", "语音识别灵敏度": "中", "默认天气城市": "杭州",
     "Dify知识库IP": "127.0.0.1", "Dify知识库密钥": "app-xxxxxxxxxx", "edge-tts音色": "晓艺-年轻女声", "edge-tts语速": "+0",
     "edge-tts音高": "+10", "自定义API-VLM": "填入服务提供方支持的VLM名称，例如 Qwen/Qwen3-VL-8B-Instruct",
-    "图像生成引擎": "云端CogView-3", "声纹识别": "关闭"}
+    "图像生成引擎": "云端CogView-3", "声纹识别": "关闭",
+    "自定义API-response_format能力": "",
+    "自定义API-response_format_config_hash": ""}
 default_more_set = {
     "摄像头编号": "0", "麦克风编号": "0", "声纹识别阈值": "0.6", "Ollama端口": "11434", "LM Studio端口": "1234",
     "本地SD AI绘画端口": "7860", "Transformers端口": "8000", "Transformers模型": "model/Qwen3-0.6B",

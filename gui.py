@@ -1,8 +1,8 @@
 import wave
+import json
 import pyaudio
 from base64 import b64decode
 from threading import Thread
-from openai import OpenAI
 from gui_sub import *
 
 
@@ -37,7 +37,8 @@ def open_setting_w():  # 设置窗口
             "Dify知识库IP": dify_ip_entry.get(), "Dify知识库密钥": dify_key_entry.get(),
             "edge-tts音色": edge_speaker_menu.get(), "edge-tts语速": edge_rate_entry.get(),
             "edge-tts音高": pitch_entry.get(), "自定义API-VLM": custom_vlm_entry.get(),
-            "图像生成引擎": draw_menu.get(), "声纹识别": voiceprint_sw_menu.get()}
+            "图像生成引擎": draw_menu.get(), "声纹识别": voiceprint_sw_menu.get(),
+            "自定义API-response_format能力": "pending"}
         with open('data/db/config.json', 'w', encoding='utf-8') as f:
             json.dump(new_config, f, ensure_ascii=False, indent=4)
         messagebox.showinfo("保存成功", "保存成功！重启软件生效")
