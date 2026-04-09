@@ -1,13 +1,45 @@
+import json
 from llm import chat_llm, notice, stream_insert
 from tts import stop_tts, get_tts_play
 from sys_init import mate_name, partner_config
-    
+
 """
 Actions 准则：
 该文件设置的行为均要满足以下条件:
     1. 被动式回复无法发生的行为
     2. 契合伴侣模式思想
 """
+
+ACTION_JSON_PATH = 'partner/action.json'
+registered_actions = {}
+
+
+def load_action_json():
+    """读取 action.json 文件"""
+    with open(ACTION_JSON_PATH, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def save_action_json(data):
+    """保存 action.json 文件"""
+    with open(ACTION_JSON_PATH, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def init_action_in_json(action_name):
+    """在 action.json 中初始化行为（如果不存在）"""
+    data = load_action_json()
+    if action_name not in data['actions']:
+        data['actions'][action_name] = {'count': 0}
+        save_action_json(data)
+
+
+def increment_action_count(action_name):
+    """增加行为的调用次数"""
+    data = load_action_json()
+    if action_name in data['actions']:
+        data['actions'][action_name]['count'] += 1
+        save_action_json(data)
 
 
 def _run_action(msg, notice_text, stream_prefix):
@@ -20,25 +52,34 @@ def _run_action(msg, notice_text, stream_prefix):
         get_tts_play(bot_response)
         return bot_response
     except Exception as e:
-        notice(f"{notice_text}出错: {e}")
+        notice(f"{notice_text}出错：{e}")
         return None
 
 
-# 行为注册表 (通过 register_action 装饰器自动注册)
-registered_actions = {}
-
-
 def register_action(name):
-    """行为注册装饰器"""
+    """行为注册装饰器
+
+    功能:
+    1. 装饰时自动在 action.json 注册行为（如果不存在）
+    2. 调用时自动让该行为的 count +1
+    """
     def decorator(func):
-        registered_actions[name] = func
-        return func
+        # 初始化 action.json 中的行为（如果不存在）
+        init_action_in_json(name)
+
+        def wrapper(*args, **kwargs):
+            # 调用次数 +1
+            increment_action_count(name)
+            return func(*args, **kwargs)
+
+        registered_actions[name] = wrapper
+        return wrapper
     return decorator
 
 
 @register_action('action_self_talking')
 def action_self_talking():
-    """自言自语 - LLM扮演的角色自己和自己说话"""
+    """自言自语 - LLM 扮演的角色自己和自己说话"""
     print('角色自言自语')
     return _run_action(
         msg="请你根据当前人物状态信息进行自然自语",
@@ -61,10 +102,14 @@ def action_push_agreed_event():
     )
 
 
-#TODO llm应该可以在保持主要与用户对话的情况下，根据对话情况自主选择一名人物进行对话
+# TODO llm 应该可以在保持主要与用户对话的情况下，根据对话情况自主选择一名人物进行对话
 @register_action('action_talk_with_other')
 def action_talk_with_other(name=None):
-    """LLM扮演的角色与其他角色进行对话"""
+    """LLM 扮演的角色与其他角色进行对话
+
+    Args:
+        name: 对话对象的角色名称，由 LLM 的 choice_next_action.params.character_name 提供
+    """
     print(f'角色与{name}对话')
     return _run_action(
         msg="请你依据你扮演角色的人际关系以及当前状态，在扮演角色的人际关系中选出一个合理的角色进行对话",
@@ -75,7 +120,7 @@ def action_talk_with_other(name=None):
 
 @register_action('action_express_body_state')
 def action_express_body_state():
-    """表达身体状态 - LLM扮演的角色描述自己当前的身体状态或动作"""
+    """表达身体状态 - LLM 扮演的角色描述自己当前的身体状态或动作"""
     print('角色表达身体状态')
     return _run_action(
         msg="""主动表达一个"身体"的感受或需求，比如困了、饿了、冷了，
@@ -88,7 +133,7 @@ def action_express_body_state():
 
 @register_action('action_interact_with_environment')
 def action_interact_with_environment():
-    """与环境互动 - LLM扮演的角色与周围环境中的物体或场景进行互动"""
+    """与环境互动 - LLM 扮演的角色与周围环境中的物体或场景进行互动"""
     print('角色与环境互动')
     return _run_action(
         msg="""
