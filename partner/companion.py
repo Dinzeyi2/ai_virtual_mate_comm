@@ -33,7 +33,6 @@ def build_companion_prompt(base_prompt, partner_config):
     【输出格式要求】
     输出必须严格遵循以下JSON结构：
     {{
-        "time_period": "字符串类型，必需字段,表示本次对话结束后的时间段，你必须从这列表中选择一个值[早上，中午，下午，晚上，凌晨]如时间段无变化则保持不变",
         "is_user_nearby": 布尔类型，必需字段,表示当前对话结束后你用户是否在你扮演的角色旁或者你扮演的角色能否看到用户。你能只能选择true,false这两种值,
         "action": '字符串类型，必需字段,表示当前对话结束后你扮演角色的行为", 
         "location": "字符串类型，必需字段,表示当前对话结束后你扮演角色的位置", 
@@ -54,8 +53,6 @@ def build_companion_prompt(base_prompt, partner_config):
     {{"action": "action_talk_with_other", "params": {{"character_name": "字符串类型，必需字段,表示你扮演的角色与其他人对话的名字"}}}},
     {{"action": "action_default","params": null }}
     ]
-    【time_period字段可选值列表】
-    [早上，中午，下午，晚上，凌晨]
     【参考示例】
     示例1：
     {example_response}

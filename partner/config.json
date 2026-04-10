@@ -8,17 +8,6 @@
             "schema": {
                 "type": "object",
                 "properties": {
-                    "time_period": {
-                        "type": "string",
-                        "enum": [
-                            "早上",
-                            "中午",
-                            "下午",
-                            "晚上",
-                            "凌晨"
-                        ],
-                        "description": "表示本次对话结束后的时间段；如时间段无变化则保持不变。"
-                    },
                     "is_user_nearby": {
                         "type": "boolean",
                         "description": "对话结束后用户是否在角色旁/角色能否看到用户。"
@@ -95,7 +84,6 @@
                     }
                 },
                 "required": [
-                    "time_period",
                     "is_user_nearby",
                     "action",
                     "location",
@@ -115,32 +103,25 @@
         "type": "json_object"
     },
     "last_status": {
-        "location": "璃月港街头",
-        "time_period": "中午",
-        "action": "去吃饭",
+        "location": "",
+        "time_period": "",
+        "action": "",
         "agreed_events": [
-            "午时在月海亭门口一起吃饭",
-            "哥哥送甘雨到月海亭",
             ""
         ],
         "is_user_nearby": true,
         "current_location_options": [
             "",
-            "家中",
-            "璃月港街头",
-            "月海亭"
+            "",
+            "",
+            ""
         ],
         "current_action_options": [
-            "",
-            "休息",
-            "查看刻晴带来的紧急文件",
-            "处理刻晴带来的紧急文件",
-            "起床",
-            "准备去工作",
-            "去吃饭"
+            ""
+            
         ],
         "choice_next_action": {
-            "action": "action_push_agreed_event",
+            "action": "",
             "params": null
         },
         "destination_llm": "",
