@@ -1,7 +1,7 @@
 import random
 from llm import *
 from tts import *
-from partner.actionScheduler import run_action
+from partner.actionScheduler import *
 
 
 def ase_chat(msg):  # 主动对话
@@ -28,11 +28,11 @@ def ase_hello():  # 根据时间发起话题
 def run_ase_rp():  # 角色扮演聊天模式的主动对话
     def ase_vlm_screen():
         ase_chat(
-            f"你是我的有情感的贴心伙伴，名叫{mate_name}。需要称呼我为{username}，在对话中，你将作为{mate_name}，隐藏自己是程序的事实。注意保持角色一致，不能提及任何关于自己是语言模型或人工智能的话题。回答不要超过50个字，性格为亲切活泼。请你读取屏幕画面，务必结合其中内容和我聊聊天，比如点评屏幕中的内容。")
+            f"你是我的有情感的贴心伙伴，名叫{mate_name}。需要称呼我为{username}，在对话中，你将作为{mate_name}，隐藏自己是程序的事实。注意保持角色一致，不能提及任何关于自己是语言模型或人工智能的话题。回答不要超过 50 个字，性格为亲切活泼。请你读取屏幕画面，务必结合其中内容和我聊聊天，比如点评屏幕中的内容。")
 
     def ase_vlm_cam():
         ase_chat(
-            f"你是我的有情感的贴心伙伴，名叫{mate_name}。需要称呼我为{username}，在对话中，你将作为{mate_name}，隐藏自己是程序的事实。注意保持角色一致，不能提及任何关于自己是语言模型或人工智能的话题。回答不要超过50个字，性格为亲切活泼。请你读取你看到的摄像头内容，务必根据其中的内容和我聊聊天，比如点评看到的人物行为和场景。")
+            f"你是我的有情感的贴心伙伴，名叫{mate_name}。需要称呼我为{username}，在对话中，你将作为{mate_name}，隐藏自己是程序的事实。注意保持角色一致，不能提及任何关于自己是语言模型或人工智能的话题。回答不要超过 50 个字，性格为亲切活泼。请你读取你看到的摄像头内容，务必根据其中的内容和我聊聊天，比如点评看到的人物行为和场景。")
 
     def ase_context():
         ase_chat("你是我的有情感的贴心伙伴，请你结合上下文和人设，主动向我发起聊天话题。")
@@ -51,18 +51,19 @@ def run_ase_rp():  # 角色扮演聊天模式的主动对话
             print('进入主动调节')
             time_ranges = {"高活跃": (60, 120), "中活跃": (240, 360)}
             time_range = time_ranges.get(ase_menu.get(), (480, 660))
-            run_action()
+
+            run_action()  # 统一调度入口
 
             time.sleep(random.randint(*time_range))
 
-        
+
         time.sleep(0.1)
 
 
 def run_ase_agent():  # 多智能体助手模式的主动对话
     def ase_vlm_cam():
         ase_chat(
-            f"你是我的有情感的贴心伙伴，名叫{mate_name}。需要称呼我为{username}，在对话中，你将作为{mate_name}，隐藏自己是程序的事实。注意保持角色一致，不能提及任何关于自己是语言模型或人工智能的话题。回答不要超过50个字，性格为亲切活泼。请你读取你看到的摄像头内容，务必根据其中的内容和我聊聊天，比如点评看到的人物行为和场景。")
+            f"你是我的有情感的贴心伙伴，名叫{mate_name}。需要称呼我为{username}，在对话中，你将作为{mate_name}，隐藏自己是程序的事实。注意保持角色一致，不能提及任何关于自己是语言模型或人工智能的话题。回答不要超过 50 个字，性格为亲切活泼。请你读取你看到的摄像头内容，务必根据其中的内容和我聊聊天，比如点评看到的人物行为和场景。")
 
     def ase_news():
         ase_chat("你有什么感兴趣的新闻吗，选择一条你感兴趣的和我聊聊天")

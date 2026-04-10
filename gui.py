@@ -1,8 +1,8 @@
 import wave
+import json
 import pyaudio
 from base64 import b64decode
 from threading import Thread
-from openai import OpenAI
 from gui_sub import *
 
 
@@ -37,7 +37,8 @@ def open_setting_w():  # 设置窗口
             "Dify知识库IP": dify_ip_entry.get(), "Dify知识库密钥": dify_key_entry.get(),
             "edge-tts音色": edge_speaker_menu.get(), "edge-tts语速": edge_rate_entry.get(),
             "edge-tts音高": pitch_entry.get(), "自定义API-VLM": custom_vlm_entry.get(),
-            "图像生成引擎": draw_menu.get(), "声纹识别": voiceprint_sw_menu.get()}
+            "图像生成引擎": draw_menu.get(), "声纹识别": voiceprint_sw_menu.get(),
+            "自定义API-response_format能力": "pending"}
         with open('data/db/config.json', 'w', encoding='utf-8') as f:
             json.dump(new_config, f, ensure_ascii=False, indent=4)
         messagebox.showinfo("保存成功", "保存成功！重启软件生效")
@@ -359,7 +360,7 @@ def open_setting_w():  # 设置窗口
     weather_city_entry.insert("end", weather_city)
     weather_city_entry.place(relx=0.62, rely=0.93)
     Label(setting_w, text="图像生成引擎:").place(relx=0.82, rely=0.098)
-    draw_options = ["云端CogView-3", "云端Kolors", "云端文心Web", "本地Janus整合包", "本地SD API", "关闭AI绘画"]
+    draw_options = ["云端CogView-3", "云端Kolors", "云端文心Web", "本地Janus整合包", "本地SD API","关闭AI绘画","comfyui"]
     draw_var = StringVar(setting_w)
     draw_var.set(prefer_draw)
     draw_menu = ttk.Combobox(setting_w, textvariable=draw_var, values=draw_options, width=14, state="readonly",

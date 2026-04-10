@@ -1,0 +1,42 @@
+{
+  "threshold_coefficient": 1.2,
+  "priority_coefficient": 1.4,
+  "actions": {
+    "action_self_talking": {
+      "count": 0
+    },
+    "action_push_agreed_event": {
+      "count": 0
+    },
+    "action_talk_with_other": {
+      "count": 0
+    },
+    "action_express_body_state": {
+      "count": 0
+    },
+    "action_interact_with_environment": {
+      "count": 0
+    },
+    "action_default": {
+      "count": 0
+    }
+  },
+  "proportion": {
+    "is_user_nearby_true": {
+      "action_self_talking": 10,
+      "action_push_agreed_event": 50,
+      "action_talk_with_other": 0,
+      "action_express_body_state": 30,
+      "action_interact_with_environment": 20,
+      "action_default": 40
+    },
+    "is_user_nearby_false": {
+      "action_self_talking": 30,
+      "action_push_agreed_event": 50,
+      "action_talk_with_other": 40,
+      "action_express_body_state": 20,
+      "action_interact_with_environment": 30,
+      "action_default": 30
+    }
+  }
+}

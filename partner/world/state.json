@@ -1,0 +1,8 @@
+{
+  "virtual_time": {
+    "virtual_day_time": 25,
+    "virtual_world_time": "00:40:00",
+    "virtual_day": 10,
+    "update_interval": 5
+  }
+}
