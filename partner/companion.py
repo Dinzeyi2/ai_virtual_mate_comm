@@ -7,7 +7,7 @@
 import json
 from tts import notice
 import textwrap
-
+from sys_init import virtual_time_manager
 
 def build_companion_prompt(base_prompt, partner_config):
     """构建伴侣模式专属系统提示词"""
@@ -28,7 +28,7 @@ def build_companion_prompt(base_prompt, partner_config):
         "next_destination_user": "家"
     },
     ensure_ascii=False
-)
+)   
     response_rul_prompt = textwrap.dedent(f"""\
     【输出格式要求】
     输出必须严格遵循以下JSON结构：
@@ -65,7 +65,7 @@ def build_companion_prompt(base_prompt, partner_config):
     请你记住你当前扮演角色的人物状态:
         人物当前的位置:{partner_config.get_current_location()},
         可供参考的人物位置:{partner_config.get_current_location_options()}
-        当前对话的时间段:{partner_config.get_current_time_period()}
+        当前对话的时间段:{virtual_time_manager.get_period()}
         当前人物正在干什么:{partner_config.get_current_action()}
         可供参考的人物行为:{partner_config.get_current_action_options()}
         当前与用户约定的事:{current_event}

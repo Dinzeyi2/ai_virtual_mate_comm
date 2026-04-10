@@ -162,6 +162,13 @@ except Exception as e1:
 from partner.characterStatus import characterStatus
 partner_config =  characterStatus()
 
+# 加载并初始化伴侣模式下的虚拟世界时间管理器
+from partner.world.time.manager import VirtualTimeManager
+virtual_time_manager = VirtualTimeManager()
+
+# 启动后台计时线程 (导入 timer 模块时自动启动)
+from partner.world.time import timer  # noqa: F401
+
 
 def _custom_api_response_format_detect():
     """启动时检测自定义API的response_format支持能力（仅配置变化时执行）"""
