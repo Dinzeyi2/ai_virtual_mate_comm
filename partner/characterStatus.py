@@ -18,7 +18,6 @@ class characterStatus:
     def __init__(self):
         # 对象属性
         self._current_location = config_json['last_status']['location']
-        self._current_time_period = config_json['last_status']['time_period']
         self._current_action = config_json['last_status']['action']
         self._agreed_events = config_json['last_status']['agreed_events']
         self._current_location_options = config_json['last_status']['current_location_options']
@@ -32,7 +31,6 @@ class characterStatus:
         """将内存状态同步写入配置文件"""
         try:
             config_json['last_status']['location'] = self._current_location
-            config_json['last_status']['time_period'] = self._current_time_period
             config_json['last_status']['action'] = self._current_action
             config_json['last_status']['agreed_events'] = self._agreed_events.copy()
             config_json['last_status']['current_location_options'] = self._current_location_options
@@ -55,17 +53,6 @@ class characterStatus:
             if value not in self._current_location_options:
                 self._current_location_options.append(value)
             self._current_location = value
-            self._save()
-        except Exception as e:
-            raise Exception(f"伴侣配置文件同步错误{e}")
-
-    # current_time_period
-    def get_current_time_period(self):
-        return self._current_time_period
-
-    def set_current_time_period(self, value):
-        try:
-            self._current_time_period = value
             self._save()
         except Exception as e:
             raise Exception(f"伴侣配置文件同步错误{e}")
@@ -171,8 +158,6 @@ if __name__ == '__main__':
 
     a.set_current_action('工作')
     a.set_current_location('家')
-    a.set_current_time_period('早上')
     print(a.get_agreed_events())
     print(a.get_current_action())
     print(a.get_current_location())
-    print(a.get_current_time_period())
