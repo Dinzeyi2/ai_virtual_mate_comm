@@ -123,8 +123,7 @@ def action_express_body_state():
     """表达身体状态 - LLM 扮演的角色描述自己当前的身体状态或动作"""
     print('角色表达身体状态')
     return _run_action(
-        msg="""主动表达一个"身体"的感受或需求，比如困了、饿了、冷了，
-                并基于这个状态提出一个交互邀请或结束当前话题
+        msg="""根据当前场景合理的主动表达一个"身体"的感受或需求并基于这个状态提出一个交互邀请
                 """,
         notice_text=f"{mate_name}表达身体状态",
         stream_prefix=f"{mate_name}（身体状态）:"
