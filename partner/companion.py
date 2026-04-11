@@ -15,7 +15,6 @@ def build_companion_prompt(base_prompt, partner_config):
     current_event = agreed_events[0] if agreed_events else ''
     example_response = json.dumps(
     {
-        "time_period": "早上",
         "is_user_nearby": "true",
         "action": "工作", 
         "location": "月海亭", 
@@ -42,7 +41,8 @@ def build_companion_prompt(base_prompt, partner_config):
         "message": "字符串类型，必需字段,表示你的回答，回复", 
         "choice_next_action": "json格式，必需字段,表示当前对话结束后，角色主动发起下一步行为的选择。你必须根据当前情境从以下选项中选择最合适的一个——action_self_talking：角色独处、无明确事项时，进行自言自语或内心独白；action_push_agreed_event：当前存在与用户未完成的约定事件时，选择此项来推进事件；action_express_body_state：角色有明显身体状态需要表达时才选（如饿、累、困、冷等），不可随意滥用；action_interact_with_environment：角色在当前位置有可互动的环境元素时选择；action_talk_with_other：角色需要主动找其他人说话时选择，需同时填写character_name；action_default：不符合以上任何情境时选择此默认项。你必须从以下列表中选择一个值", 
         "next_destination_llm": "字符串类型，必需字段,表示当前会话结束后你扮演的角色要前往的目的地，如无变化则保持原值或填空字符串", 
-        "next_destination_user": "字符串类型，必需字段,表示当前会话结束后用户要前往的目的地，如无变化则保持原值或填空字符串"
+        "next_destination_user": "字符串类型，必需字段,表示当前会话结束后用户要前往的目的地，如无变化则保持原值或填空字符串",
+        
     }}
     【choice_next_action字段可选值列表】
     [
@@ -109,7 +109,6 @@ def update_companion_state(partner_config, res_json, openai_history, think_filte
     partner_config.set_current_action(res['action'])
     partner_config.set_current_location(res['location'])
     partner_config.set_is_user_nearby(res['is_user_nearby'])
-    partner_config.set_current_time_period(res['time_period'])
 
     # 更新下一次主动行为
     try:
