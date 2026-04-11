@@ -162,16 +162,25 @@ def update_companion_state(partner_config, res_json, openai_history, think_filte
     if 'next_destination_user' in res:
         partner_config.set_destination_user(res['next_destination_user'])
 
-    # 处理文生图：如果有 prompt 字段，异步生成图片
+    # 处理文生图：检查 is_generate 配置
     if 'prompt' in res and res['prompt'] and on_image_generated:
         from .generateImage import generate_companion_image
 
         def generate_image_async():
             try:
                 prompt_dict = res['prompt']
-                image_path = generate_companion_image(prompt_dict)
-                if image_path and on_image_generated:
-                    on_image_generated(image_path)
+
+                # 使用 partner_config 判断是否开启生成
+                if partner_config.get_is_generate():
+                    # 进一步检查频率
+                    if partner_config.should_generate_image():
+                        image_path = generate_companion_image(prompt_dict, partner_config=partner_config)
+                        if image_path and on_image_generated:
+                            on_image_generated(image_path)
+                    else:
+                        print("[companion] 频率未到，跳过本次生成")
+                else:
+                    print("[companion] 图片生成未开启")
             except Exception as e:
                 print(f"[companion] 文生图异常：{e}")
 

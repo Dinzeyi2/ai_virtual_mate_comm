@@ -12,12 +12,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from comfyuiAPI.api import generate_image_with_websocket, get_images_by_prompt_id
 
 
-def build_image_prompt(prompt_dict):
+def build_image_prompt(prompt_dict, partner_config=None):
     """
     将 LLM 返回的 prompt 字典组合成完整的文生图提示词
 
     Args:
         prompt_dict: 包含 scene, emotion, action, focus, lighting, camera 字段的字典
+        partner_config: characterStatus 实例，用于获取自定义提示词
 
     Returns:
         组合后的英文提示词字符串
@@ -35,7 +36,7 @@ def build_image_prompt(prompt_dict):
     # emotion - 情绪表情
     if prompt_dict.get('emotion'):
         parts.append(prompt_dict['emotion'])
-        
+
     # focus - 核心焦点
     if prompt_dict.get('focus'):
         parts.append(prompt_dict['focus'])
@@ -48,11 +49,21 @@ def build_image_prompt(prompt_dict):
     if prompt_dict.get('camera'):
         parts.append(prompt_dict['camera'])
 
+    # 添加自定义提示词到 parts 列表
+    if partner_config:
+        custom_prompts = partner_config.get_image_prompts()
+        if custom_prompts['positive'] and custom_prompts['positive'].strip():
+            parts.append(custom_prompts['positive'])
+        if custom_prompts['negative'] and custom_prompts['negative'].strip():
+            parts.append(f"NEGATIVE: {custom_prompts['negative']}")
+        if custom_prompts['other'] and custom_prompts['other'].strip():
+            parts.append(custom_prompts['other'])
+
     # 用逗号连接所有部分
     return ", ".join(parts)
 
 
-def generate_companion_image(prompt_dict, save_path=None):
+def generate_companion_image(prompt_dict, save_path=None, partner_config=None):
     """
     伴侣模式专用文生图接口
 
@@ -65,6 +76,7 @@ def generate_companion_image(prompt_dict, save_path=None):
             - lighting: 光线描述
             - camera: 镜头构图
         save_path: 图片保存路径（可选，默认为模块 output 目录）
+        partner_config: characterStatus 实例，用于获取自定义提示词
 
     Returns:
         生成的图片本地路径 (str)，生成失败返回 None
@@ -76,8 +88,8 @@ def generate_companion_image(prompt_dict, save_path=None):
     os.makedirs(save_path, exist_ok=True)
 
     try:
-        # 组合提示词
-        full_prompt = build_image_prompt(prompt_dict)
+        # 组合提示词（传入 partner_config 以添加自定义提示词）
+        full_prompt = build_image_prompt(prompt_dict, partner_config)
         if not full_prompt:
             print("[generateImage] 提示词为空，跳过生成")
             return None
