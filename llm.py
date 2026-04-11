@@ -206,7 +206,11 @@ def chat_llm(msg):  # 大语言模型聊天
                 if mode_menu.get() == '伴侣模式':
                     # 配置定义 openAi 客户端
                     client = OpenAI(base_url=custom_url, api_key=custom_key)
-                    return companion_chat(msg, openai_history, client, custom_model, partner_config, think_filter_switch, prompt)
+                    # 定义图片生成回调
+                    def on_image_generated(image_path):
+                        from gui_sub import insert_image_to_chat
+                        insert_image_to_chat(image_path)
+                    return companion_chat(msg, openai_history, client, custom_model, partner_config, think_filter_switch, prompt, on_image_generated)
                 else:
                     client = OpenAI(base_url=custom_url, api_key=custom_key)
                     openai_history.append({"role": "user", "content": msg})
