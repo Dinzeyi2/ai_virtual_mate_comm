@@ -11,14 +11,18 @@ ai_virtual_mate_comm/
 ├── partner/
 │   ├── generateImage/
 │   │   ├── generator.py              # 文生图生成器核心逻辑
+│   │   ├── manager.py                # 图片生成配置管理类
 │   │   ├── __init__.py               # 模块导出
 │   │   └── output/                   # 生成的图片保存目录
 │   │
-│   ├── characterStatus.py            # 角色状态管理 (含图片生成配置)
+│   ├── characterStatus.py            # 角色状态管理
 │   └── companion.py                  # 伴侣对话桥接模块
 │
 ├── comfyuiAPI/
 │   └── api.py                        # ComfyUI WebSocket API 封装
+│
+├── partner/
+│   └── config.json                   # 伴侣配置文件 (generate_image 位于根级别)
 │
 └── docs/
     └── generateImage/
@@ -31,13 +35,15 @@ ai_virtual_mate_comm/
 
 ### 3.1 配置文件位置
 
-图片生成配置存储在 `partner/config.json` 的 `last_status.generate_image` 对象中。
+图片生成配置存储在 `partner/config.json` 的**根级别** `generate_image` 对象中（不在 `last_status` 下）。
 
 ### 3.2 配置结构
 
 ```json
 {
-  "last_status": {
+    "response_rule": "...",
+    "response_rule_schema": { ... },
+    "response_rule_object": { ... },
     "generate_image": {
       "positive_prompt": "",
       "negative_prompt": "",
@@ -46,8 +52,8 @@ ai_virtual_mate_comm/
       "generate_frequency": "always",
       "generate_frequency_options": ["always", "often", "little"],
       "counts": 0
-    }
-  }
+    },
+    "last_status": { ... }
 }
 ```
 
@@ -80,40 +86,48 @@ ai_virtual_mate_comm/
 
 ## 四、核心 API
 
-### 4.1 characterStatus 类 - 图片生成配置管理
+### 4.1 GenerateImageConfig 类 - 图片生成配置管理
 
-**文件位置**: `partner/characterStatus.py`
+**文件位置**: `partner/generateImage/manager.py`
+
+**实例化**:
+```python
+from partner.generateImage.manager import generate_image_config
+
+# 使用全局单例
+config = generate_image_config  # 推荐
+
+# 或创建新实例
+from partner.generateImage.manager import GenerateImageConfig
+config = GenerateImageConfig()
+```
 
 #### 4.1.1 获取/设置生成开关
 
 ```python
-from partner.characterStatus import characterStatus
-
-partner_config = characterStatus()
-
 # 获取生成开关状态
-is_enabled = partner_config.get_is_generate()  # True | False
+is_enabled = config.get_is_generate()  # True | False
 
 # 设置生成开关
-partner_config.set_is_generate(True)   # 开启
-partner_config.set_is_generate(False)  # 关闭
+config.set_is_generate(True)   # 开启
+config.set_is_generate(False)  # 关闭
 ```
 
 #### 4.1.2 获取/设置生成频率
 
 ```python
 # 获取当前频率
-freq = partner_config.get_generate_frequency()  # "always" | "often" | "little"
+freq = config.get_generate_frequency()  # "always" | "often" | "little"
 
 # 设置生成频率
-partner_config.set_generate_frequency('often')
+config.set_generate_frequency('often')
 ```
 
 #### 4.1.3 判断是否应该生成
 
 ```python
 # 内部调用，根据频率和计数器判断
-should_gen = partner_config.should_generate_image()  # True | False
+should_gen = config.should_generate_image()  # True | False
 ```
 
 **返回值说明**:
@@ -124,19 +138,31 @@ should_gen = partner_config.should_generate_image()  # True | False
 
 ```python
 # 获取所有自定义提示词
-prompts = partner_config.get_image_prompts()
-# 返回: {'positive': '', 'negative': '', 'other': ''}
+prompts = config.get_image_prompts()
+# 返回：{'positive': '', 'negative': '', 'other': ''}
 
 # 设置单个提示词
-partner_config.set_image_prompt('positive_prompt', 'masterpiece, best quality')
-partner_config.set_image_prompt('negative_prompt', 'low quality, bad anatomy')
-partner_config.set_image_prompt('other_prompt', 'detailed skin texture')
+config.set_image_prompt('positive_prompt', 'masterpiece, best quality')
+config.set_image_prompt('negative_prompt', 'low quality, bad anatomy')
+config.set_image_prompt('other_prompt', 'detailed skin texture')
+
+# 或单独获取
+positive = config.get_positive_prompt()
+negative = config.get_negative_prompt()
+other = config.get_other_prompt()
 ```
 
 #### 4.1.5 重置计数器
 
 ```python
-partner_config.reset_generate_counts()  # 将 counts 重置为 0
+config.reset_generate_counts()  # 将 counts 重置为 0
+```
+
+#### 4.1.6 获取完整配置
+
+```python
+full_config = config.get_generate_image_config()
+# 返回完整的 generate_image 配置字典
 ```
 
 ---
@@ -150,7 +176,7 @@ partner_config.reset_generate_counts()  # 将 counts 重置为 0
 **职责**: 将 LLM 返回的 prompt 字典与自定义提示词组合成完整的提示词字符串
 
 ```python
-def build_image_prompt(prompt_dict, partner_config=None):
+def build_image_prompt(prompt_dict):
     """
     Args:
         prompt_dict: LLM 返回的 prompt 字典，包含以下字段:
@@ -159,7 +185,6 @@ def build_image_prompt(prompt_dict, partner_config=None):
             - focus: 核心焦点 (如 "face, flushed, eyes, watery")
             - lighting: 光线描述 (如 "soft moonlight, warm lantern glow")
             - camera: 镜头构图 (如 "close-up, face, slightly above")
-        partner_config: characterStatus 实例，用于获取自定义提示词
 
     Returns:
         组合后的提示词字符串，用逗号分隔各部分
@@ -188,12 +213,12 @@ prompt_dict = {
 
 # 不使用自定义提示词
 result = build_image_prompt(prompt_dict)
-# 输出: "bedroom, evening, moonlight, shy, blushing, face, eyes, soft rim light, close-up"
+# 输出："bedroom, evening, moonlight, shy, blushing, face, eyes, soft rim light, close-up"
 
-# 使用自定义提示词
-partner_config.set_image_prompt('positive_prompt', 'masterpiece, best quality')
-result = build_image_prompt(prompt_dict, partner_config)
-# 输出: "bedroom, evening, moonlight, shy, blushing, face, eyes, soft rim light, close-up, masterpiece, best quality"
+# 使用自定义提示词（manager 会自动从 config.json 读取）
+config.set_image_prompt('positive_prompt', 'masterpiece, best quality')
+result = build_image_prompt(prompt_dict)
+# 输出："bedroom, evening, moonlight, shy, blushing, face, eyes, soft rim light, close-up, masterpiece, best quality"
 ```
 
 #### 4.2.2 generate_companion_image()
@@ -201,12 +226,11 @@ result = build_image_prompt(prompt_dict, partner_config)
 **职责**: 伴侣模式文生图主接口，调用 ComfyUI API 生成图像
 
 ```python
-def generate_companion_image(prompt_dict, save_path=None, partner_config=None):
+def generate_companion_image(prompt_dict, save_path=None):
     """
     Args:
         prompt_dict: LLM 返回的 prompt 字典
         save_path: 图片保存路径（可选，默认为模块 output 目录）
-        partner_config: characterStatus 实例，用于获取自定义提示词
 
     Returns:
         生成的图片本地路径 (str)，生成失败返回 None
@@ -226,7 +250,7 @@ prompt_dict = {
     'camera': 'wide shot, cinematic'
 }
 
-image_path = generate_companion_image(prompt_dict, partner_config=partner_config)
+image_path = generate_companion_image(prompt_dict)
 print(f"图片已保存到：{image_path}")
 ```
 
@@ -256,11 +280,11 @@ update_companion_state() 解析 JSON
     └─→ 检测图片生成配置
             │
             ▼
-        partner_config.get_is_generate()
+        generate_image_config.get_is_generate()
             │
             ├─ False → 打印"图片生成未开启"，跳过
             │
-            └─ True → partner_config.should_generate_image()
+            └─ True → generate_image_config.should_generate_image()
                         │
                         ├─ False → 打印"频率未到，跳过本次生成"
                         │
@@ -296,16 +320,17 @@ update_companion_state() 解析 JSON
 # 处理文生图：检查 is_generate 配置
 if 'prompt' in res and res['prompt'] and on_image_generated:
     from .generateImage import generate_companion_image
+    from .generateImage.manager import generate_image_config
 
     def generate_image_async():
         try:
             prompt_dict = res['prompt']
 
-            # 使用 partner_config 判断是否开启生成
-            if partner_config.get_is_generate():
+            # 使用 generate_image_config 判断是否开启生成
+            if generate_image_config.get_is_generate():
                 # 进一步检查频率
-                if partner_config.should_generate_image():
-                    image_path = generate_companion_image(prompt_dict, partner_config=partner_config)
+                if generate_image_config.should_generate_image():
+                    image_path = generate_companion_image(prompt_dict)
                     if image_path and on_image_generated:
                         on_image_generated(image_path)
                 else:
@@ -322,6 +347,7 @@ if 'prompt' in res and res['prompt'] and on_image_generated:
 1. 只有 LLM 返回 JSON 包含 `prompt` 字段时才触发
 2. 异步执行，不阻塞对话流程
 3. 双层检查：先检查开关，再检查频率
+4. 使用独立的 `generate_image_config` 管理类，不依赖 `partner_config`
 
 ---
 
@@ -330,52 +356,47 @@ if 'prompt' in res and res['prompt'] and on_image_generated:
 ### 6.1 开启图片生成
 
 ```python
-from partner.characterStatus import characterStatus
-
-partner_config = characterStatus()
+from partner.generateImage.manager import generate_image_config
 
 # 开启图片生成
-partner_config.set_is_generate(True)
+generate_image_config.set_is_generate(True)
 
 # 设置频率为 always（每次都生成）
-partner_config.set_generate_frequency('always')
+generate_image_config.set_generate_frequency('always')
 ```
 
 ### 6.2 配置自定义提示词
 
 ```python
 # 设置通用高质量提示词
-partner_config.set_image_prompt('positive_prompt', 'masterpiece, best quality, ultra detailed')
+generate_image_config.set_image_prompt('positive_prompt', 'masterpiece, best quality, ultra detailed')
 
 # 设置负面提示词
-partner_config.set_image_prompt('negative_prompt', 'low quality, worst quality, bad anatomy, blurry')
+generate_image_config.set_image_prompt('negative_prompt', 'low quality, worst quality, bad anatomy, blurry')
 
 # 添加额外的风格描述
-partner_config.set_image_prompt('other_prompt', 'anime style, cel shading')
+generate_image_config.set_image_prompt('other_prompt', 'anime style, cel shading')
 ```
 
 ### 6.3 设置生成频率
 
 ```python
 # 每 3 次对话生成 1 次（节省资源）
-partner_config.set_generate_frequency('often')
+generate_image_config.set_generate_frequency('often')
 
 # 每 5 次对话生成 1 次（最低频率）
-partner_config.set_generate_frequency('little')
+generate_image_config.set_generate_frequency('little')
 ```
 
 ### 6.4 完整对话场景示例
 
 ```python
-from partner.characterStatus import characterStatus
+from partner.generateImage.manager import generate_image_config
 
 # 初始化
-partner_config = characterStatus()
-
-# 配置图片生成
-partner_config.set_is_generate(True)
-partner_config.set_generate_frequency('often')  # 每 3 次生成 1 次
-partner_config.set_image_prompt('positive_prompt', 'masterpiece, best quality')
+generate_image_config.set_is_generate(True)
+generate_image_config.set_generate_frequency('often')  # 每 3 次生成 1 次
+generate_image_config.set_image_prompt('positive_prompt', 'masterpiece, best quality')
 
 # 第 1 次对话 - 不会生成
 # 用户："甘雨，我们去月海亭看星星吧"
@@ -432,7 +453,7 @@ Thread(target=generate_image_async, daemon=True).start()
 
 ```python
 try:
-    image_path = generate_companion_image(prompt_dict, partner_config=partner_config)
+    image_path = generate_companion_image(prompt_dict)
     if image_path and on_image_generated:
         on_image_generated(image_path)
 except Exception as e:
@@ -444,6 +465,23 @@ except Exception as e:
 - 提示词为空
 - 图片下载失败
 - 网络超时
+
+### 7.4 配置持久化
+
+`GenerateImageConfig` 类负责读取和写入 `partner/config.json`:
+
+```python
+# 内部实现
+def _load_config(self):
+    with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+        self._config = json.load(f)
+
+def _save_config(self):
+    with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
+        json.dump(self._config, f, ensure_ascii=False, indent=4)
+```
+
+每次调用 `set_*` 方法时会自动保存配置到文件。
 
 ---
 
@@ -465,10 +503,15 @@ except Exception as e:
 
 ```python
 # 检查配置是否正确加载
+from partner.generateImage.manager import generate_image_config
 import json
+
+print("当前配置:", generate_image_config.get_generate_image_config())
+
+# 或直接读取配置文件
 with open('partner/config.json', 'r', encoding='utf-8') as f:
     config = json.load(f)
-    print(json.dumps(config['last_status'].get('generate_image'), indent=2, ensure_ascii=False))
+    print(json.dumps(config['generate_image'], indent=2, ensure_ascii=False))
 ```
 
 ---
@@ -509,29 +552,37 @@ with open('partner/config.json', 'r', encoding='utf-8') as f:
 3. ComfyUI 服务器是否可访问
 4. 查看日志是否有错误信息
 
+```python
+from partner.generateImage.manager import generate_image_config
+
+# 检查配置
+print("开关状态:", generate_image_config.get_is_generate())
+print("当前频率:", generate_image_config.get_generate_frequency())
+print("计数器:", generate_image_config.get_generate_counts())
+```
+
 ### 10.2 生成频率不符合预期
 
 ```python
 # 检查当前频率设置
-print(partner_config.get_generate_frequency())  # 应为 "always", "often", 或 "little"
+print(generate_image_config.get_generate_frequency())  # 应为 "always", "often", 或 "little"
 
 # 检查计数器
-print(partner_config.get_generate_counts())  # 查看当前计数
+print(generate_image_config.get_generate_counts())  # 查看当前计数
 
 # 手动重置计数器
-partner_config.reset_generate_counts()
+generate_image_config.reset_generate_counts()
 ```
 
 ### 10.3 提示词不生效
 
-确保 `partner_config` 参数正确传递给 `generate_companion_image()`:
+检查 `partner/config.json` 中是否有自定义提示词：
 
 ```python
-# 正确
-image_path = generate_companion_image(prompt_dict, partner_config=partner_config)
-
-# 错误 - partner_config 未传递，自定义提示词不会生效
-image_path = generate_companion_image(prompt_dict)
+import json
+with open('partner/config.json', 'r', encoding='utf-8') as f:
+    config = json.load(f)
+    print(json.dumps(config['generate_image'], indent=2, ensure_ascii=False))
 ```
 
 ---
@@ -540,9 +591,24 @@ image_path = generate_companion_image(prompt_dict)
 
 | 文件 | 路径 | 说明 |
 |------|------|------|
+| 配置管理类 | `partner/generateImage/manager.py` | GenerateImageConfig 类，配置读写 |
 | 生成器核心 | `partner/generateImage/generator.py` | 提示词组合 + ComfyUI 调用 |
-| 配置管理 | `partner/characterStatus.py` | generate_image 配置管理 |
 | 对话桥接 | `partner/companion.py` | 图片生成触发逻辑 |
 | ComfyUI API | `comfyuiAPI/api.py` | WebSocket 通信封装 |
-| 配置文件 | `partner/config.json` | 配置存储 |
+| 配置文件 | `partner/config.json` | generate_image 配置存储（根级别） |
 | 输出目录 | `partner/generateImage/output/` | 生成的图片保存位置 |
+
+---
+
+## 十二、架构变更说明
+
+**v4.1 变更**（最新）:
+- `generate_image` 配置从 `last_status` 移至 `config.json` 根级别
+- 新增 `GenerateImageConfig` 管理类 (`manager.py`)
+- 移除 `characterStatus.py` 中的图片生成相关代码
+- `generator.py` 和 `companion.py` 改用 `generate_image_config` 单例
+
+**优势**:
+- 配置结构更清晰，图片生成配置与角色状态分离
+- 独立管理类，职责单一
+- 减少 `characterStatus` 的复杂度

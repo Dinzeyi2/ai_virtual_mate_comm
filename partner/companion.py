@@ -165,16 +165,17 @@ def update_companion_state(partner_config, res_json, openai_history, think_filte
     # 处理文生图：检查 is_generate 配置
     if 'prompt' in res and res['prompt'] and on_image_generated:
         from .generateImage import generate_companion_image
+        from .generateImage.manager import generate_image_config
 
         def generate_image_async():
             try:
                 prompt_dict = res['prompt']
 
-                # 使用 partner_config 判断是否开启生成
-                if partner_config.get_is_generate():
+                # 使用 generate_image_config 判断是否开启生成
+                if generate_image_config.get_is_generate():
                     # 进一步检查频率
-                    if partner_config.should_generate_image():
-                        image_path = generate_companion_image(prompt_dict, partner_config=partner_config)
+                    if generate_image_config.should_generate_image():
+                        image_path = generate_companion_image(prompt_dict)
                         if image_path and on_image_generated:
                             on_image_generated(image_path)
                     else:

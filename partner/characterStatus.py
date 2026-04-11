@@ -27,18 +27,6 @@ class characterStatus:
         self._destination_llm = config_json['last_status'].get('destination_llm', '')
         self._destination_user = config_json['last_status'].get('destination_user', '')
 
-        # 图片生成配置
-        default_generate_image = {
-            'positive_prompt': '',
-            'negative_prompt': '',
-            'other_prompt': '',
-            'is_generate': False,
-            'generate_frequency': 'always',
-            'generate_frequency_options': ['always', 'often', 'little'],
-            'counts': 0
-        }
-        self._generate_image_config = config_json['last_status'].get('generate_image', default_generate_image)
-
     def _save(self):
         """将内存状态同步写入配置文件"""
         try:
@@ -51,7 +39,6 @@ class characterStatus:
             config_json['last_status']['choice_next_action'] = self._choice_next_action
             config_json['last_status']['destination_llm'] = self._destination_llm
             config_json['last_status']['destination_user'] = self._destination_user
-            config_json['last_status']['generate_image'] = self._generate_image_config
             with open(config_path, 'w', encoding='utf-8') as f:
                 json.dump(config_json, f, ensure_ascii=False, indent=4)
         except Exception as e:
@@ -162,89 +149,6 @@ class characterStatus:
             self._save()
         except Exception as e:
             raise Exception(f"伴侣配置文件同步错误{e}")
-
-    # generate_image 配置管理
-    def get_generate_image_config(self):
-        """获取完整的图片生成配置"""
-        return self._generate_image_config
-
-    def get_is_generate(self):
-        """判断是否开启图片生成"""
-        return self._generate_image_config.get('is_generate', False)
-
-    def set_is_generate(self, value):
-        """设置图片生成开关"""
-        self._generate_image_config['is_generate'] = bool(value)
-        self._save()
-
-    def get_generate_frequency(self):
-        """获取生成频率"""
-        return self._generate_image_config.get('generate_frequency', 'always')
-
-    def set_generate_frequency(self, value):
-        """设置生成频率"""
-        if value in self._generate_image_config.get('generate_frequency_options', []):
-            self._generate_image_config['generate_frequency'] = value
-            self._save()
-
-    def get_generate_counts(self):
-        """获取当前计数器"""
-        return self._generate_image_config.get('counts', 0)
-
-    def reset_generate_counts(self):
-        """重置计数器"""
-        self._generate_image_config['counts'] = 0
-        self._save()
-
-    def should_generate_image(self):
-        """根据频率配置和计数器判断是否应该生成图片
-
-        逻辑说明:
-        - always: 每次都生成
-        - often: 每 3 次生成 1 次 (第 3、6、9...次生成)
-        - little: 每 5 次生成 1 次 (第 5、10、15...次生成)
-        """
-        if not self._generate_image_config.get('is_generate', False):
-            return False
-
-        frequency = self._generate_image_config.get('generate_frequency', 'always')
-
-        if frequency == 'always':
-            return True
-
-        counts = self._generate_image_config.get('counts', 0)
-
-        # 先递增计数器
-        self._generate_image_config['counts'] = counts + 1
-        self._save()
-
-        # 检查是否达到阈值
-        if frequency == 'often' and self._generate_image_config['counts'] >= 3:
-            self._generate_image_config['counts'] = 0
-            self._save()
-            return True
-        elif frequency == 'little' and self._generate_image_config['counts'] >= 5:
-            self._generate_image_config['counts'] = 0
-            self._save()
-            return True
-
-        return False
-
-    def get_image_prompts(self):
-        """获取自定义提示词"""
-        config = self._generate_image_config
-        prompts = {
-            'positive': config.get('positive_prompt', ''),
-            'negative': config.get('negative_prompt', ''),
-            'other': config.get('other_prompt', '')
-        }
-        return prompts
-
-    def set_image_prompt(self, prompt_type, value):
-        """设置指定类型的提示词"""
-        if prompt_type in ['positive_prompt', 'negative_prompt', 'other_prompt']:
-            self._generate_image_config[prompt_type] = value
-            self._save()
 
 
 if __name__ == '__main__':

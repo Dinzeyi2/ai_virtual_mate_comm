@@ -102,6 +102,19 @@
     "response_rule_object": {
         "type": "json_object"
     },
+    "generate_image": {
+        "positive_prompt": "",
+        "negative_prompt": "",
+        "other_prompt": "",
+        "is_generate": true,
+        "generate_frequency": "often",
+        "generate_frequency_options": [
+            "always",
+            "often",
+            "little"
+        ],
+        "counts": 0
+    },
     "last_status": {
         "location": "家",
         "action": "提议做早餐",
@@ -111,10 +124,6 @@
         ],
         "is_user_nearby": true,
         "current_location_options": [
-            "",
-            "",
-            "",
-            "",
             "家"
         ],
         "current_action_options": [
@@ -126,19 +135,6 @@
             "params": null
         },
         "destination_llm": "厨房",
-        "destination_user": "",
-        "generate_image": {
-            "positive_prompt": "",
-            "negative_prompt": "",
-            "other_prompt": "",
-            "is_generate": true,
-            "generate_frequency": "little",
-            "generate_frequency_options": [
-                "always",
-                "often",
-                "little"
-            ],
-            "counts": 3
-        }
+        "destination_user": ""
     }
 }
