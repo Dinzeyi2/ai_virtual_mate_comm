@@ -14,11 +14,11 @@ class ComfyUIWebSocketClient:
         self.client_id = str(uuid.uuid4())
         self.ws = None
         self.result = None
-        # 在初始化时建立 WebSocket 连接
+        # 在初始化时建立 WebSocket 连接（只用于监听）
         self._create_websocket_connection()
 
     def _create_websocket_connection(self):
-        """创建 WebSocket 连接"""
+        """创建 WebSocket 连接（用于监听进度）"""
         ws_url = f"wss://{self.server_address}/ws?clientId={self.client_id}"
         try:
             self.ws = websocket.create_connection(ws_url)
@@ -30,79 +30,84 @@ class ComfyUIWebSocketClient:
         if self.ws is None:
             return False
         try:
-            # 通过发送 ping 来检查连接是否存活
             self.ws.ping()
             return True
         except:
             return False
 
-    def send_prompt(self, workflow):
+    def queue_prompt(self, workflow, prompt_id=None):
         """
-        通过 WebSocket 发送工作流
+        通过 HTTP POST 发送工作流到 ComfyUI（这是正确的方式！）
+        ComfyUI 的 /prompt 端点接收任务
         """
-        # 检查 WebSocket 连接是否可用，不可用则重新创建
-        if not self._is_websocket_available():
-            self._create_websocket_connection()
+        if prompt_id is None:
+            prompt_id = str(uuid.uuid4())
 
-        # 通过 WebSocket 发送 prompt
+        # 使用 HTTP POST 到 /prompt 端点
         prompt_data = {
-            "type": "prompt",
-            "data": {
-                "prompt": workflow,
-                "client_id": self.client_id
-            }
+            "prompt": workflow,
+            "client_id": self.client_id,
+            "prompt_id": prompt_id
         }
-        self.ws.send(json.dumps(prompt_data))
+        url = f"https://{self.server_address}/prompt"
+        response = requests.post(url, json=prompt_data)
+        response.raise_for_status()
+        return prompt_id
 
-        # 循环接收直到收到 prompt_id
+    def wait_for_completion(self, prompt_id):
+        """
+        通过 WebSocket 等待任务执行完成
+        """
         while True:
-            response = self.ws.recv()
-            data = json.loads(response)
+            message = self.ws.recv()
+            data = json.loads(message)
 
-            if data.get("type") == "status":
-                print(f"状态：{data['data']}")
+            # 只处理与当前 prompt_id 相关的消息
+            msg_prompt_id = data.get("data", {}).get("prompt_id")
+            if msg_prompt_id != prompt_id:
                 continue
-            elif "prompt_id" in data:
-                print(f"收到 prompt_id: {data['prompt_id']}")
-                return data
 
-    def listen_progress(self, prompt_id):
-        """
-        监听生成进度
-        """
-        try:
-            while True:
-                message = self.ws.recv()
-                data = json.loads(message)
+            msg_type = data.get("type")
+            msg_data = data.get("data", {})
 
-                # 处理不同类型的消息
-                if data["type"] == "status":
-                    print(f"状态更新：{data['data']}")
+            if msg_type == "status":
+                print(f"状态：{msg_data}")
 
-                elif data["type"] == "executing":
-                    node_id = data["data"].get("node")
-                    print(f"正在执行节点：{node_id}")
+            elif msg_type == "execution_start":
+                print("开始执行")
 
-                elif data["type"] == "progress":
-                    value = data["data"]["value"]
-                    max_value = data["data"]["max"]
-                    print(f"进度：{value}/{max_value}")
-
-                elif data["type"] == "execution_start":
-                    print("开始执行")
-
-                elif data["type"] == "execution_success":
-                    print("执行成功!")
-                    self.result = data
+            elif msg_type == "executing":
+                node_id = msg_data.get("node")
+                if node_id is None:
+                    # node 为 None 表示整个队列执行完成
+                    print("执行完成!")
                     break
+                print(f"正在执行节点：{node_id}")
 
-                elif data["type"] == "execution_cached":
-                    print("使用了缓存")
+            elif msg_type == "progress":
+                value = msg_data.get("value")
+                max_value = msg_data.get("max")
+                print(f"进度：{value}/{max_value}")
 
-        except KeyboardInterrupt:
-            print("监听中断")
-        finally:
+            elif msg_type == "executed":
+                print(f"节点 {msg_data['node']} 执行完成")
+
+            elif msg_type == "execution_success":
+                print("执行成功!")
+                break
+
+            elif msg_type == "execution_error":
+                raise RuntimeError(f"执行错误：{msg_data.get('exception_message', 'Unknown error')}")
+
+            elif msg_type == "execution_cached":
+                print("使用了缓存")
+
+    def close(self):
+        """关闭 WebSocket 连接"""
+        if self.ws:
             self.ws.close()
+            self.ws = None
+
 
 def generate_image_with_websocket(prompt_text, save_path="comfyuiAPI/output"):
     """
@@ -117,6 +122,7 @@ def generate_image_with_websocket(prompt_text, save_path="comfyuiAPI/output"):
     # 加载并修改工作流
     with open("comfyuiAPI/wrokflows/Test.json", "r", encoding="utf-8") as f:
         workflow = json.load(f)
+
     # 正向提示词
     workflow["9"]["inputs"]["text"] = prompt_text  # 修改提示词
     # 生成随机种子
@@ -125,18 +131,16 @@ def generate_image_with_websocket(prompt_text, save_path="comfyuiAPI/output"):
     workflow["7"]["inputs"]["seed"] = random_seed
     print(f"使用随机种子：{random_seed}")
 
-    # 发送工作流
-    result = client.send_prompt(workflow)
-    print(f"API 返回结果：{result}")
-
-    if "prompt_id" not in result:
-        raise ValueError(f"API 返回错误：{result}")
-
-    prompt_id = result["prompt_id"]
+    # 发送工作流（使用 HTTP POST 到 /prompt 端点）
+    prompt_id = client.queue_prompt(workflow)
     print(f"Prompt ID: {prompt_id}")
 
-    # 监听进度
-    client.listen_progress(prompt_id)
+    # 等待执行完成
+    client.wait_for_completion(prompt_id)
+    print(f"执行完成!")
+
+    # 关闭连接
+    client.close()
 
     return prompt_id
 
@@ -212,11 +216,12 @@ def get_images_by_prompt_id(prompt_id, save_path="comfyuiAPI/output", server_add
 
 # 使用示例
 if __name__ == "__main__":
-    client = ComfyUIWebSocketClient()
-    server_address = client.server_address
-
     prompt_id = generate_image_with_websocket(r"Ganyu (Genshin Impact), long blue-purple gradient hair, qilin horns, soft and reserved expression, faint blush, eyes slightly averted but secretly looking toward the viewer, gently holding her lover's sleeve (only the fabric edge / hand visible, no face shown), leaning in slightly as if relying on them, close-up half-body portrait, quiet snowy night, Liyue-style eaves and lanterns blurred in the background, thin mist, small snowflakes, calm breathing atmosphere, cinematic lighting, soft moonlight, shallow depth of field, bokeh, delicate hair highlights, smooth detailed skin, high-end anime illustration, ultra detailed, masterpiece, best quality, clean composition, wallpaper")
     print(f"生成完成，Prompt ID: {prompt_id}")
+
+    client = ComfyUIWebSocketClient()
+    server_address = client.server_address
+    client.close()
 
     # 根据 prompt_id 获取图片（指定节点 8: SaveImage）
     images = get_images_by_prompt_id(prompt_id, server_address=server_address, node_id="8")
