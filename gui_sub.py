@@ -48,6 +48,42 @@ def draw_box(w_name, draw_name):  # AI绘画输出框
     draw_w.iconbitmap("data/image/logo.ico")
 
 
+# 存储图片引用以防止被垃圾回收
+_photo_references = []
+
+
+def insert_image_to_chat(image_path):
+    """
+    在聊天框中插入图片（在最新消息下方）
+
+    Args:
+        image_path: 图片本地路径
+    """
+    try:
+        # 打开并缩放图片
+        img = Image.open(image_path)
+        # 限制图片最大尺寸
+        max_width = 400
+        max_height = 400
+        img.thumbnail((max_width, max_height), Image.Resampling.LANCZOS)
+
+        # 转换为 PhotoImage
+        photo = ImageTk.PhotoImage(img)
+        _photo_references.append(photo)  # 保持引用防止被垃圾回收
+
+        # 在聊天框末尾插入图片
+        output_box.insert('end', '\n')  # 先换行
+        output_box.window_create('end', window=Label(output_box, image=photo))
+        output_box.insert('end', '\n\n')  # 图片后添加空行
+
+        # 滚动到最新消息
+        output_box.see('end')
+
+        print(f"[gui_sub] 图片已插入聊天框：{image_path}")
+    except Exception as e:
+        print(f"[gui_sub] 插入图片失败：{e}")
+
+
 def show_menu_msg(event):  # 消息框右键菜单
     menu = Menu(msg_w, tearoff=0)
     menu.add_command(label="📄复制 Ctrl+C", command=lambda: msg_w.focus_get().event_generate('<<Copy>>'))

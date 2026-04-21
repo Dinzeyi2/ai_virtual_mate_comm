@@ -63,7 +63,7 @@
   "6": {
     "inputs": {
       "add_noise": "enable",
-      "noise_seed": 990724189204091,
+      "noise_seed": 44679501483145,
       "steps": 25,
       "cfg": 7.5,
       "sampler_name": "dpmpp_2m",
@@ -95,7 +95,7 @@
   },
   "7": {
     "inputs": {
-      "seed": 860816524062954,
+      "seed": 258529817073066,
       "steps": 10,
       "cfg": 8,
       "sampler_name": "dpmpp_2m",
@@ -186,6 +186,18 @@
     "class_type": "LoraLoaderModelOnly",
     "_meta": {
       "title": "LoRA加载器（仅模型）"
+    }
+  },
+  "14": {
+    "inputs": {
+      "images": [
+        "2",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "预览图像"
     }
   }
 }
